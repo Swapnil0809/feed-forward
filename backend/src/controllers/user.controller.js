@@ -154,7 +154,6 @@ const creatCityAdmin = asyncHandler(async (req, res) => {
     email,
     phoneNo,
     password: hashedPassword,
-    role: "city-admin",
     location,
   });
 
