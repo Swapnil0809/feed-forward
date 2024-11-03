@@ -26,7 +26,7 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["donor", "recipient", "city admin"],
+      enum: ["donor", "recipient", "city-admin"],
       required: true,
     },
     location: {
