@@ -7,9 +7,9 @@ import asyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
 import { generateToken } from "../utils/generateToken.js";
 
-const donorSignUp = asyncHandler(async (res, req) => {
-  const { username, email, phoneNo, password, role, location, donorType } =
-    req.body;
+const donorSignUp = asyncHandler(async (req, res) => {
+  console.log(req.body);
+  const { username, email, phoneNo, password, location, donorType } = req.body;
 
   const existingUser = await Donor.findOne({
     $or: [{ username }, { email }, { phoneNo }],
@@ -29,7 +29,6 @@ const donorSignUp = asyncHandler(async (res, req) => {
     email,
     phoneNo,
     password: hashedPassword,
-    role,
     location,
     donorType,
   });
@@ -46,13 +45,12 @@ const donorSignUp = asyncHandler(async (res, req) => {
     .json(new ApiResponse(200, createdUser, "Donor Signed Up Successfully"));
 });
 
-const recipientSignUp = asyncHandler(async (rea, req) => {
+const recipientSignUp = asyncHandler(async (req, res) => {
   const {
     username,
     email,
     phoneNo,
     password,
-    role,
     location,
     organizationType,
     registerationNo,
@@ -76,7 +74,6 @@ const recipientSignUp = asyncHandler(async (rea, req) => {
     email,
     phoneNo,
     password: hashedPassword,
-    role,
     location,
     organizationType,
     registerationNo,
@@ -96,7 +93,7 @@ const recipientSignUp = asyncHandler(async (rea, req) => {
     );
 });
 
-const userLogin = asyncHandler(async (rea, req) => {
+const userLogin = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
   let token;
 
