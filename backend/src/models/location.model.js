@@ -1,5 +1,5 @@
 // location sub schema
-const locationSchema = new Schema({
+export const locationSchema = {
   type: {
     type: String,
     enum: ["Point"],
@@ -21,4 +21,4 @@ const locationSchema = new Schema({
   pincode: {
     type: Number,
   },
-});
+};

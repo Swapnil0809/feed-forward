@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import locationSchema from "./location.model.js";
+import { locationSchema } from "./location.model.js";
 
 // base user schema
 const userSchema = new Schema(
@@ -29,10 +29,7 @@ const userSchema = new Schema(
       enum: ["donor", "recipient", "city-admin"],
       required: true,
     },
-    location: {
-      type: locationSchema,
-      index: "2dsphere", // geospatial indexing
-    },
+    location: locationSchema,
     isVerified: {
       type: Boolean,
       default: false,
@@ -45,6 +42,7 @@ const userSchema = new Schema(
   { discriminatorKey: "role", timestamps: true }
 );
 
+userSchema.index({ location: "2dsphere" });
 export const User = mongoose.model("User", userSchema);
 
 const donorSchema = new Schema({

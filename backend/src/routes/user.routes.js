@@ -3,11 +3,10 @@ import {
   donorSignUp,
   recipientSignUp,
   userLogin,
-  userLogin,
   userLogout,
   creatCityAdmin,
-} from "../controllers/user.controller";
-import { verifyJWT, isAdmin } from "../middlewares/auth.middleware";
+} from "../controllers/user.controller.js";
+import { verifyJWT, isAdmin } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 

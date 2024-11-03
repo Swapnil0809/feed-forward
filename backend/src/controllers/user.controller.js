@@ -1,8 +1,8 @@
-import { User } from "../models/existingUser.model.js";
+import { User } from "../models/user.model.js";
 import { CityAdmin, Donor } from "../models/user.model.js";
 import { Recipient } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
-import { ApiResponse } from "../utils/ApiResponse";
+import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
 import { generateToken } from "../utils/generateToken.js";
