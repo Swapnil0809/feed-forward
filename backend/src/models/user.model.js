@@ -29,14 +29,6 @@ const userSchema = new Schema(
       required: true,
     },
     location: locationSchema,
-    isVerified: {
-      type: Boolean,
-      default: false,
-    },
-    isAdmin: {
-      type: Boolean,
-      default: false,
-    },
   },
   { discriminatorKey: "role", timestamps: true }
 );
@@ -57,10 +49,15 @@ const recipientSchema = new Schema({
   organizationType: {
     type: String,
     enum: ["charity", "shelter", "community group", "NGO"],
+    required: [true, "Organization type is required"],
   },
   registerationNo: {
     type: String,
     unique: true,
+  },
+  isVerified: {
+    type: Boolean,
+    default: false,
   },
 });
 

@@ -8,8 +8,16 @@ import bcrypt from "bcrypt";
 import { generateToken } from "../utils/generateToken.js";
 
 const donorSignUp = asyncHandler(async (req, res) => {
-  console.log(req.body);
   const { username, email, phoneNo, password, location, donorType } = req.body;
+
+  if (
+    [username, email, phoneNo, password, donorType].some(
+      (field) => !field || (typeof field === "string" && field.trim() === "")
+    ) ||
+    !location
+  ) {
+    throw new ApiError(400, "All fields, including location, are required.");
+  }
 
   const existingUser = await Donor.findOne({
     $or: [{ username }, { email }, { phoneNo }],
@@ -56,6 +64,22 @@ const recipientSignUp = asyncHandler(async (req, res) => {
     registerationNo,
   } = req.body;
 
+  if (
+    [
+      username,
+      email,
+      phoneNo,
+      password,
+      organizationType,
+      registerationNo,
+    ].some(
+      (field) => !field || (typeof field === "string" && field.trim() === "")
+    ) ||
+    !location
+  ) {
+    throw new ApiError(400, "All fields, including location, are required.");
+  }
+
   const existingUser = await Recipient.findOne({
     $or: [{ username }, { email }, { phoneNo }, { registerationNo }],
   });
@@ -95,6 +119,11 @@ const recipientSignUp = asyncHandler(async (req, res) => {
 
 const userLogin = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
+
+  if ([username, email, password].some((field) => field?.trim() === "")) {
+    throw new ApiError(400, "Email and password are required!");
+  }
+
   let token;
 
   if (
@@ -135,8 +164,13 @@ const userLogin = asyncHandler(async (req, res) => {
 const creatCityAdmin = asyncHandler(async (req, res) => {
   const { username, email, phoneNo, password, location } = req.body;
 
-  if (!req.isAdmin) {
-    throw new ApiError(401, "Unauthorized access to admin");
+  if (
+    [username, email, phoneNo, password].some(
+      (field) => !field || (typeof field === "string" && field.trim() === "")
+    ) ||
+    !location
+  ) {
+    throw new ApiError(400, "All fields, including location, are required.");
   }
 
   const existingUser = await CityAdmin.findOne({

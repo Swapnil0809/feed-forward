@@ -11,7 +11,7 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
       throw new ApiError(400, "Unauthorized access");
     }
     const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
-    const user = await User.findById(decodedToken.id);
+    const user = await User.findById(decodedToken.id).select("-password");
     if (!user) {
       throw new ApiError(401, "Invalid access token");
     }
@@ -23,7 +23,7 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
 });
 
 export const isCityAdmin = asyncHandler(async (req, _, next) => {
-  if (req.user?.role !== "city-admin") {
+  if (req.user?.role !== "CityAdmin") {
     throw new ApiError(401, "Unauthorized access to city admin");
   }
   next();
@@ -40,7 +40,6 @@ export const isAdmin = asyncHandler(async (req, _, next) => {
     if (decodedToken.role !== "admin") {
       throw new ApiError(401, "Invalid access token");
     }
-    req.isAdmin = true;
     next();
   } catch (error) {
     throw new ApiError(401, error?.message);
