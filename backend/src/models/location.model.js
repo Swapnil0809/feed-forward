@@ -1,4 +1,4 @@
-// location sub schema
+// location sub schema - GeoJSON
 export const locationSchema = {
   type: {
     type: String,
@@ -9,20 +9,22 @@ export const locationSchema = {
     type: [Number], // [longitude, latitude]
     required: [true, "Co-ordinates are required"],
   },
-  address: {
-    type: String,
-    required: [true, "Address is required"],
-  },
-  state: {
-    type: String,
-    required: [true, "State is required"],
-  },
-  city: {
-    type: String,
-    required: [true, "City is required"],
-  },
-  pincode: {
-    type: Number,
-    required: [true, "Pincode is required"],
+  properties: {
+    address: {
+      type: String,
+      required: [true, "Address is required"],
+    },
+    state: {
+      type: String,
+      required: [true, "State is required"],
+    },
+    city: {
+      type: String,
+      required: [true, "City is required"],
+    },
+    pincode: {
+      type: Number,
+      required: [true, "Pincode is required"],
+    },
   },
 };

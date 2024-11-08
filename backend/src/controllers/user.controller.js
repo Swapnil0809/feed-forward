@@ -65,14 +65,7 @@ const recipientSignUp = asyncHandler(async (req, res) => {
   } = req.body;
 
   if (
-    [
-      username,
-      email,
-      phoneNo,
-      password,
-      organizationType,
-      registerationNo,
-    ].some(
+    [username, email, phoneNo, password, organizationType].some(
       (field) => !field || (typeof field === "string" && field.trim() === "")
     ) ||
     !location
@@ -81,7 +74,7 @@ const recipientSignUp = asyncHandler(async (req, res) => {
   }
 
   const existingUser = await Recipient.findOne({
-    $or: [{ username }, { email }, { phoneNo }, { registerationNo }],
+    $or: [{ username }, { email }, { phoneNo }],
   });
 
   if (existingUser) {
@@ -100,7 +93,7 @@ const recipientSignUp = asyncHandler(async (req, res) => {
     password: hashedPassword,
     location,
     organizationType,
-    registerationNo,
+    ...(registerationNo && { registerationNo }),
   });
 
   const createdUser = await Recipient.findById(user._id).select("-password");
@@ -113,7 +106,7 @@ const recipientSignUp = asyncHandler(async (req, res) => {
 
   // get city admins form the same city
   const cityAdminEmails = await CityAdmin.find(
-    { "location.city": createdUser.location.city },
+    { "location.properties.city": createdUser.location.properties.city },
     { _id: 0, role: 0, email: 1 }
   );
 
@@ -131,7 +124,11 @@ const recipientSignUp = asyncHandler(async (req, res) => {
     </p>
   `;
 
-  await sendEmail(emailList,"New Recipient Registration - Verification Required",message);
+  await sendEmail(
+    emailList,
+    "New Recipient Registration - Verification Required",
+    message
+  );
 
   return res
     .status(200)
