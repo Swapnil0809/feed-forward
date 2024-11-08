@@ -120,7 +120,7 @@ const recipientSignUp = asyncHandler(async (req, res) => {
     <b>email</b>:${createdUser.email}<br/>
     <b>phoneno</b>:${createdUser.phoneNo}<br/>
     <b>organization type</b>:${createdUser.organizationType}<br/>
-    <b>address</b>:${createdUser.location.address}
+    <b>address</b>:${createdUser.location.properties.address}
     </p>
   `;
 
@@ -221,7 +221,7 @@ const createCityAdmin = asyncHandler(async (req, res) => {
 
   const message = `
     <p>This email is to inform you that you have been assigned as <b>City Admin</b> 
-    of <b>${createdUser.location.city}</b> city for our FeedForward Platform. 
+    of <b>${createdUser.location.properties.city}</b> city for our FeedForward Platform. 
     Your task as City Admin is to verify newly registered Recipients to ensure the integrity of our platform, your login credentials are <br/> 
     <b>username</b>:${createdUser.username}<br/> 
     <b>password</b>:${password}
