@@ -1,11 +1,11 @@
 import { User } from "../models/user.model.js";
-import { CityAdmin, Donor } from "../models/user.model.js";
-import { Recipient } from "../models/user.model.js";
+import { CityAdmin, Donor, Recipient } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
 import { generateToken } from "../utils/generateToken.js";
+import { sendEmail } from "../utils/mailer.js";
 
 const donorSignUp = asyncHandler(async (req, res) => {
   const { username, email, phoneNo, password, location, donorType } = req.body;
@@ -110,6 +110,29 @@ const recipientSignUp = asyncHandler(async (req, res) => {
   }
 
   console.log("Recipient Signed Up Successfully");
+
+  // get city admins form the same city
+  const cityAdminEmails = await CityAdmin.find(
+    { "location.city": createdUser.location.city },
+    { _id: 0, role: 0, email: 1 }
+  );
+
+  // create an array of city admin emails
+  const emailList = cityAdminEmails.map((cityAdmin) => cityAdmin.email);
+
+  const message = `
+    <p>New Recipient has registered themselves on our FeedForward Platform <br/>
+    Please verify the recipient so that they can start using our platform, there details are: <br/>
+    <b>usename</b>:${createdUser.username}<br/>
+    <b>email</b>:${createdUser.email}<br/>
+    <b>phoneno</b>:${createdUser.phoneNo}<br/>
+    <b>organization type</b>:${createdUser.organizationType}<br/>
+    <b>address</b>:${createdUser.location.address}
+    </p>
+  `;
+
+  await sendEmail(emailList,"New Recipient Registration - Verification Required",message);
+
   return res
     .status(200)
     .json(
@@ -161,7 +184,7 @@ const userLogin = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "User logged in successfully"));
 });
 
-const creatCityAdmin = asyncHandler(async (req, res) => {
+const createCityAdmin = asyncHandler(async (req, res) => {
   const { username, email, phoneNo, password, location } = req.body;
 
   if (
@@ -199,6 +222,21 @@ const creatCityAdmin = asyncHandler(async (req, res) => {
 
   console.log("City Admin created successfully");
 
+  const message = `
+    <p>This email is to inform you that you have been assigned as <b>City Admin</b> 
+    of <b>${createdUser.location.city}</b> city for our FeedForward Platform. 
+    Your task as City Admin is to verify newly registered Recipients to ensure the integrity of our platform, your login credentials are <br/> 
+    <b>username</b>:${createdUser.username}<br/> 
+    <b>password</b>:${password}
+    </p>
+  `;
+
+  await sendEmail(
+    [createdUser.email],
+    "City Admin Role and Login Details",
+    message
+  );
+
   return res
     .status(200)
     .json(new ApiResponse(200, createdUser, "City Admin created successfully"));
@@ -219,4 +257,4 @@ const userLogout = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "User logged out successfully"));
 });
 
-export { donorSignUp, recipientSignUp, userLogin, creatCityAdmin, userLogout };
+export { donorSignUp, recipientSignUp, userLogin, createCityAdmin, userLogout };
