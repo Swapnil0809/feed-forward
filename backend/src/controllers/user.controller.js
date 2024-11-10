@@ -93,7 +93,7 @@ const recipientSignUp = asyncHandler(async (req, res) => {
     password: hashedPassword,
     location,
     organizationType,
-    ...(registerationNo && { registerationNo }),
+    ...(registerationNo && { registerationNo }), // optional
   });
 
   const createdUser = await Recipient.findById(user._id).select("-password");
