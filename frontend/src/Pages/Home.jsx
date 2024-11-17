@@ -1,5 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
+import HeroImg from "../assets/Home/food-delivery-boy.png"
 const Home = () => {
   const navigate = useNavigate();
   return (
@@ -12,10 +13,12 @@ const Home = () => {
         </div>
         <div className="flex items-center space-x-2 sm:space-x-4">
           <button className="text-gray-700 hover:text-gray-1000 hover:bg-gray-300 px-3 py-2 sm:px-4 sm:py-2 rounded-md"
-          onClick={() => navigate("/Login")}>
+          onClick={() => navigate("/Signup")}>
             Log in
           </button>
-          <button className="bg-bgc text-gray-700  hover:text-gray-1000 hover:bg-gray-300 px-3 py-2 sm:px-4 sm:py-2 rounded-md hover:bg-hovr">
+          <button className="bg-bgc text-gray-700  hover:text-gray-1000 hover:bg-gray-300 px-3 py-2 sm:px-4 sm:py-2 rounded-md hover:bg-hovr"
+          onClick={() => navigate("/Signup")}
+          >
             Sign up
           </button>
         </div>
@@ -28,7 +31,7 @@ const Home = () => {
         {/* Right Image Section for Small Screens */}
         <div className="md:w-1/3 h-70 mt-1 md:mt-0 order-1 md:order-2 flex justify-center ">
           <img
-            src="src\images\food-delivery-boy.png"
+            src={HeroImg}
             alt="Food Wastage"
             className="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-auto ml-10"
           />
