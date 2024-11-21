@@ -1,37 +1,90 @@
 import React, { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import axiosInstance from '../utils/axiosInstance';
+import { useQuery,useMutation } from '@tanstack/react-query';
 
-const SignUp = () => {
+// func to fetch coordinates
+const fetchCoordinates = async (pincode) => {
+  const apiUrl = `https://nominatim.openstreetmap.org/search?postalcode=${pincode}&format=json&limit=1`
+  const { data } = await axiosInstance.get(apiUrl, { withCredentials: false });
+  if (data.length === 0) throw new Error("Coordinates not found");
+  const { lon, lat } = data[0];
+  return [lon, lat];
+}
+
+// func to signup user
+const submitSignup = async ({url,formData}) => {
+  const response = await axiosInstance.post(url, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return response.data;
+}
+const Signup = () => {
   const [userType, setUserType] = useState(null);
   const avatarImage = useRef(null);
   const [avatar, setAvatar] = useState("");
   const { register, handleSubmit, formState: { errors }, setValue} = useForm();
 
-  const onSubmit = (data) => {
-    console.log(data);
+// fetch coordinates with React Query
+const fetchCoordinatesQuery = useQuery(
+  ['coordinates', (pincode) => pincode],
+  fetchCoordinates,
+  { enabled: false } // Query will only run manually
+);
 
-    const formData = new FormData();
+const submitSignupMutation = useMutation(submitSignup, {
+  onSuccess: (data) => {
+    alert("Sign up successful!");
+    console.log("Server response:", data);
+  },
+  onError: (error) => {
+    alert(`Error during signup: ${error.message}`);
+  },
+});
 
-    // add all form fields
-    Object.keys(data).forEach((key) => {
-      formData.append(key,data[key]);
-    })
-    
+const handleAvatarChange = (event) => {
+  setAvatar(event.target.files[0])
+  setValue('avatar', event.target.files[0]); // update form state
+}
 
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
+const handleAvatarClick = () => {
+  avatarImage.current.click();
+}
+
+const createFormData = (data) => {
+  const formData = new FormData();
+  // add all form fields to formData
+  Object.entries(data).forEach(([key, value]) => {
+    if (value !== undefined) formData.append(key, value);
+  });
+  return formData;
+};
+
+  const onSubmit = async (data) => {
+
+    try {
+     // trigger the coordinates query 
+     fetchCoordinatesQuery.refetch({ pincode: data.location.properties.pincode });
+
+     // wait for the coordinates query to complete
+     const coordinates = await fetchCoordinatesQuery.data;
+  
+      // append coordinates to location object
+      data.location.coordinates = coordinates;
+  
+      // create formdata
+      const formData = createFormData(data);
+      
+      // Set the API URL based on user type
+      const apiUrl = `/user/${userType}-signup`;
+  
+      // Call the signup API
+      submitSignupMutation.mutate({ url: apiUrl, formData });
+    } catch (error) {
+      console.error(error)
     }
-    
   };
 
-  const handleChange = (event) => {
-    setAvatar(event.target.files[0])
-    setValue('avatar', event.target.files[0]); // update form state
-  }
-
-  const handleClick = () => {
-    avatarImage.current.click();
-  }
 
   const renderForm = () => {
     if (!userType) {
@@ -69,13 +122,13 @@ const SignUp = () => {
               backgroundSize:"cover",
               backgroundPosition:"center"
             }}
-            onClick={handleClick}
+            onClick={handleAvatarClick}
           >
           </div>
           <input 
             type="file" 
             {...register("avatar")}
-            onChange={handleChange} 
+            onChange={handleAvatarChange} 
             ref={avatarImage} 
             className='hidden'
             
@@ -236,4 +289,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default Signup;
