@@ -28,7 +28,7 @@ function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-2xl p-8 bg-white rounded-xl shadow-2xl">
-        <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">User Registration</h1>
+        <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">User Login</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* email */}
         <div>
