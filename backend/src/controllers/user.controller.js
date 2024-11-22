@@ -65,7 +65,7 @@ const donorSignUp = asyncHandler(async (req, res) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // covert coordinates into number
+  // convert coordinates into number
   const [lon, lat] = coordinates.split(",").map(Number);
 
   // construct location object
@@ -117,7 +117,7 @@ const recipientSignUp = asyncHandler(async (req, res) => {
     registerationNo,
   } = req.body;
 
-  console.log(req.body)
+  console.log(req.body);
 
   if (
     [
@@ -162,7 +162,7 @@ const recipientSignUp = asyncHandler(async (req, res) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // covert coordinates into number
+  // convert coordinates into number
   const [lon, lat] = coordinates.split(",").map(Number);
 
   // construct location object
@@ -202,8 +202,17 @@ const recipientSignUp = asyncHandler(async (req, res) => {
     { _id: 0, role: 0, email: 1 }
   );
 
-  // create an array of city admin emails
-  const emailList = cityAdminEmails.map((cityAdmin) => cityAdmin.email);
+  let emailList;
+
+  if (cityAdminEmails.length === 0) {
+    // if there is no city admin for the city
+    emailList = [process.env.ADMIN_EMAIL];
+  } else {
+    // create an array of city admin emails
+    emailList = cityAdminEmails.map((cityAdmin) => cityAdmin.email);
+  }
+
+  console.log(emailList)
 
   const message = `
     <p>New Recipient has registered themselves on our FeedForward Platform <br/>

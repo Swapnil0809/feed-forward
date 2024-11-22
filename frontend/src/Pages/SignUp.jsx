@@ -62,14 +62,11 @@ const createFormData = (data) => {
 
     try {
     
-     await fetchCoordinatesMutation.mutate(data.pincode)
+     const coordinates = await fetchCoordinatesMutation.mutateAsync(data.pincode)
 
-     const coordinates =  fetchCoordinatesMutation.data
-     console.log(coordinates)
-  
       // append coordinates to location object
       data.coordinates = coordinates;
-      console.log(data)
+      
       // create formdata
       const formData = createFormData(data);
       
