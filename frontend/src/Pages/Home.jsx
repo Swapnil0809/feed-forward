@@ -13,11 +13,11 @@ const Home = () => {
         </div>
         <div className="flex items-center space-x-2 sm:space-x-4">
           <button className="text-gray-700 hover:text-gray-1000 hover:bg-gray-300 px-3 py-2 sm:px-4 sm:py-2 rounded-md"
-          onClick={() => navigate("/Signup")}>
+          onClick={() => navigate("/login")}>
             Log in
           </button>
           <button className="bg-bgc text-gray-700  hover:text-gray-1000 hover:bg-gray-300 px-3 py-2 sm:px-4 sm:py-2 rounded-md hover:bg-hovr"
-          onClick={() => navigate("/Signup")}
+          onClick={() => navigate("/signup")}
           >
             Sign up
           </button>
