@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axiosInstance from '../utils/axiosInstance';
-import { useQuery,useMutation } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
 // func to fetch coordinates
 const fetchCoordinates = async (pincode) => {
@@ -25,14 +25,12 @@ const Signup = () => {
   const [avatar, setAvatar] = useState("");
   const { register, handleSubmit, formState: { errors }, setValue} = useForm();
 
-// fetch coordinates with React Query
-const fetchCoordinatesQuery = useQuery(
-  ['coordinates', (pincode) => pincode],
-  fetchCoordinates,
-  { enabled: false } // Query will only run manually
-);
+const fetchCoordinatesMutation = useMutation({
+  mutationFn:(pincode) => fetchCoordinates(pincode)
+})
 
-const submitSignupMutation = useMutation(submitSignup, {
+const submitSignupMutation = useMutation({
+  mutationFn: submitSignup,
   onSuccess: (data) => {
     alert("Sign up successful!");
     console.log("Server response:", data);
@@ -44,7 +42,7 @@ const submitSignupMutation = useMutation(submitSignup, {
 
 const handleAvatarChange = (event) => {
   setAvatar(event.target.files[0])
-  setValue('avatar', event.target.files[0]); // update form state
+  setValue('avatarImage', event.target.files[0]); // update form state
 }
 
 const handleAvatarClick = () => {
@@ -63,20 +61,20 @@ const createFormData = (data) => {
   const onSubmit = async (data) => {
 
     try {
-     // trigger the coordinates query 
-     fetchCoordinatesQuery.refetch({ pincode: data.location.properties.pincode });
+    
+     await fetchCoordinatesMutation.mutate(data.pincode)
 
-     // wait for the coordinates query to complete
-     const coordinates = await fetchCoordinatesQuery.data;
+     const coordinates =  fetchCoordinatesMutation.data
+     console.log(coordinates)
   
       // append coordinates to location object
-      data.location.coordinates = coordinates;
-  
+      data.coordinates = coordinates;
+      console.log(data)
       // create formdata
       const formData = createFormData(data);
       
       // Set the API URL based on user type
-      const apiUrl = `/user/${userType}-signup`;
+      const apiUrl = `/users/${userType}-signup`;
   
       // Call the signup API
       submitSignupMutation.mutate({ url: apiUrl, formData });
@@ -115,7 +113,7 @@ const createFormData = (data) => {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* avatar */}
         <div className=' flex justify-center items-center'>
-          <label htmlFor="avatar"></label>
+          <label htmlFor="avatarImage"></label>
           <div className="w-[10em] h-[10em] rounded-full border-black border-[2px]" 
             style={{
               backgroundImage:avatar? `url(${URL.createObjectURL(avatar)})`:"none",
@@ -127,7 +125,7 @@ const createFormData = (data) => {
           </div>
           <input 
             type="file" 
-            {...register("avatar")}
+            {...register("avatarImage")}
             onChange={handleAvatarChange} 
             ref={avatarImage} 
             className='hidden'
@@ -182,10 +180,10 @@ const createFormData = (data) => {
           <input 
             id="address"
             type="text"
-            {...register('location.properties.address', { required: 'Address is required' })}
+            {...register('address', { required: 'Address is required' })}
             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
           />
-          {errors.location?.properties?.address && <p className="mt-1 text-sm text-red-600">{errors.location?.properties?.address.message}</p>}
+          {errors.address && <p className="mt-1 text-sm text-red-600">{errors.address.message}</p>}
         </div>
         {/* city */}
         <div>
@@ -193,10 +191,10 @@ const createFormData = (data) => {
           <input 
             id="city"
             type="text"
-            {...register('location.properties.city', { required: 'City is required' })}
+            {...register('city', { required: 'City is required' })}
             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
           />
-          {errors.location?.properties?.city && <p className="mt-1 text-sm text-red-600">{errors.location?.properties?.city.message}</p>}
+          {errors.city && <p className="mt-1 text-sm text-red-600">{errors.city.message}</p>}
         </div>
         {/* state */}
         <div>
@@ -204,10 +202,10 @@ const createFormData = (data) => {
           <input 
             id="state"
             type="text"
-            {...register('location.properties.state', { required: 'State is required' })}
+            {...register('state', { required: 'State is required' })}
             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
           />
-          {errors.location?.properties?.state && <p className="mt-1 text-sm text-red-600">{errors.location?.properties?.state.message}</p>}
+          {errors.state && <p className="mt-1 text-sm text-red-600">{errors.state.message}</p>}
         </div>
         {/* pincode */}
         <div>
@@ -215,10 +213,10 @@ const createFormData = (data) => {
           <input 
             id="pincode"
             type="text"
-            {...register('location.properties.pincode', { required: 'Pincode is required' })}
+            {...register('pincode', { required: 'Pincode is required' })}
             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
           />
-          {errors.location?.properties?.pincode && <p className="mt-1 text-sm text-red-600">{errors.location?.properties?.pincode.message}</p>}
+          {errors.pincode && <p className="mt-1 text-sm text-red-600">{errors.pincode.message}</p>}
         </div>
 
         {/* donor  */}
@@ -261,7 +259,7 @@ const createFormData = (data) => {
               <label htmlFor="registrationNo" className="block text-sm font-medium text-gray-700 mb-1">Registration Number</label>
               <input
                 id="registrationNo"
-                {...register('registrationNo', { required: 'Registration number is required' })}
+                {...register('registrationNo')}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               />
               {errors.registrationNo && <p className="mt-1 text-sm text-red-600">{errors.registrationNo.message}</p>}

@@ -4,6 +4,9 @@ import { locationSchema } from "./location.model.js";
 // base user schema
 const userSchema = new Schema(
   {
+    avatar:{
+      type:String // cloudinary url
+    },
     username: {
       type: String,
       unique: true,

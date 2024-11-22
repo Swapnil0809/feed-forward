@@ -6,17 +6,39 @@ import asyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
 import { generateToken } from "../utils/generateToken.js";
 import { sendEmail } from "../utils/mailer.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const donorSignUp = asyncHandler(async (req, res) => {
-  const { username, email, phoneNo, password, location, donorType } = req.body;
+  const {
+    username,
+    email,
+    phoneNo,
+    password,
+    coordinates,
+    address,
+    state,
+    city,
+    pincode,
+    donorType,
+  } = req.body;
 
   if (
-    [username, email, phoneNo, password, donorType].some(
+    [
+      username,
+      email,
+      phoneNo,
+      password,
+      coordinates,
+      address,
+      state,
+      city,
+      pincode,
+      donorType,
+    ].some(
       (field) => !field || (typeof field === "string" && field.trim() === "")
-    ) ||
-    !location
+    )
   ) {
-    throw new ApiError(400, "All fields, including location, are required.");
+    throw new ApiError(400, "All fields are required.");
   }
 
   const existingUser = await Donor.findOne({
@@ -30,9 +52,36 @@ const donorSignUp = asyncHandler(async (req, res) => {
     );
   }
 
+  // check for avatar file
+  const avatarLocalPath = req.file?.path;
+
+  let avatar;
+  if (avatarLocalPath) {
+    avatar = await uploadOnCloudinary(avatarLocalPath);
+    if (!avatar.url) {
+      throw new ApiError(400, "Something went wrong while uploading avatar");
+    }
+  }
+
   const hashedPassword = await bcrypt.hash(password, 10);
 
+  // covert coordinates into number
+  const [lon, lat] = coordinates.split(",").map(Number);
+
+  // construct location object
+  const location = {
+    type: "Point",
+    coordinates: [lon, lat],
+    properties: {
+      address,
+      state,
+      city,
+      pincode,
+    },
+  };
+
   const user = await Donor.create({
+    ...(avatarLocalPath && { avatar: avatar.url }), // optional
     username,
     email,
     phoneNo,
@@ -59,18 +108,34 @@ const recipientSignUp = asyncHandler(async (req, res) => {
     email,
     phoneNo,
     password,
-    location,
+    coordinates,
+    address,
+    state,
+    city,
+    pincode,
     organizationType,
     registerationNo,
   } = req.body;
 
+  console.log(req.body)
+
   if (
-    [username, email, phoneNo, password, organizationType].some(
+    [
+      username,
+      email,
+      phoneNo,
+      password,
+      coordinates,
+      address,
+      state,
+      city,
+      pincode,
+      organizationType,
+    ].some(
       (field) => !field || (typeof field === "string" && field.trim() === "")
-    ) ||
-    !location
+    )
   ) {
-    throw new ApiError(400, "All fields, including location, are required.");
+    throw new ApiError(400, "All fields are required.");
   }
 
   const existingUser = await Recipient.findOne({
@@ -84,9 +149,36 @@ const recipientSignUp = asyncHandler(async (req, res) => {
     );
   }
 
+  // check for avatar file
+  const avatarLocalPath = req.file?.path;
+
+  let avatar;
+  if (avatarLocalPath) {
+    avatar = await uploadOnCloudinary(avatarLocalPath);
+    if (!avatar.url) {
+      throw new ApiError(400, "Something went wrong while uploading avatar");
+    }
+  }
+
   const hashedPassword = await bcrypt.hash(password, 10);
 
+  // covert coordinates into number
+  const [lon, lat] = coordinates.split(",").map(Number);
+
+  // construct location object
+  const location = {
+    type: "Point",
+    coordinates: [lon, lat],
+    properties: {
+      address,
+      state,
+      city,
+      pincode,
+    },
+  };
+
   const user = await Recipient.create({
+    ...(avatarLocalPath && { avatar: avatar.url }), // optional
     username,
     email,
     phoneNo,
