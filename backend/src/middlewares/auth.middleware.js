@@ -22,6 +22,20 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
   }
 });
 
+export const isDonor = asyncHandler(async (req, _, next) => {
+  if (req.user?.role !== "Donor") {
+    throw new ApiError(401, "Unauthorized access to donor");
+  }
+  next();
+});
+
+export const isRecipient = asyncHandler(async (req, _, next) => {
+  if (req.user?.role !== "Recipient") {
+    throw new ApiError(401, "Unauthorized access to recipient");
+  }
+  next();
+});
+
 export const isCityAdmin = asyncHandler(async (req, _, next) => {
   if (req.user?.role !== "CityAdmin") {
     throw new ApiError(401, "Unauthorized access to city admin");

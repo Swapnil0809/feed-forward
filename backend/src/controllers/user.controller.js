@@ -212,7 +212,7 @@ const recipientSignUp = asyncHandler(async (req, res) => {
     emailList = cityAdminEmails.map((cityAdmin) => cityAdmin.email);
   }
 
-  console.log(emailList)
+  console.log(emailList);
 
   const message = `
     <p>New Recipient has registered themselves on our FeedForward Platform <br/>
@@ -283,15 +283,34 @@ const userLogin = asyncHandler(async (req, res) => {
 });
 
 const createCityAdmin = asyncHandler(async (req, res) => {
-  const { username, email, phoneNo, password, location } = req.body;
+  const {
+    username,
+    email,
+    phoneNo,
+    password,
+    coordinates,
+    address,
+    state,
+    city,
+    pincode,
+  } = req.body;
 
   if (
-    [username, email, phoneNo, password].some(
+    [
+      username,
+      email,
+      phoneNo,
+      password,
+      coordinates,
+      address,
+      state,
+      city,
+      pincode,
+    ].some(
       (field) => !field || (typeof field === "string" && field.trim() === "")
-    ) ||
-    !location
+    )
   ) {
-    throw new ApiError(400, "All fields, including location, are required.");
+    throw new ApiError(400, "All fields are required.");
   }
 
   const existingUser = await CityAdmin.findOne({
@@ -303,6 +322,21 @@ const createCityAdmin = asyncHandler(async (req, res) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
+
+  // convert coordinates into number
+  const [lon, lat] = coordinates.split(",").map(Number);
+
+  // construct location object
+  const location = {
+    type: "Point",
+    coordinates: [lon, lat],
+    properties: {
+      address,
+      state,
+      city,
+      pincode,
+    },
+  };
 
   const user = await CityAdmin.create({
     username,
