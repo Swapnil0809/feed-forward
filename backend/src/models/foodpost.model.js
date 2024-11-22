@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { locationSchema } from "./location.model.js";
 
 const foodpostSchema = new Schema(
   {
@@ -31,9 +32,7 @@ const foodpostSchema = new Schema(
     pickupDate: {
       type: Date,
     },
-    location: {
-      type: locationSchema,
-    },
+    location: locationSchema,
     status: {
       type: String,
       enum: ["available", "claimed", "expired"],
