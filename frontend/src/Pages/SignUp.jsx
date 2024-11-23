@@ -1,287 +1,281 @@
-import React, { useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import axiosInstance from '../utils/axiosInstance';
-import { useMutation } from '@tanstack/react-query';
+import React, { useRef, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useMutation } from '@tanstack/react-query'
+import axiosInstance from '../utils/axiosInstance'
 
-// func to fetch coordinates
 const fetchCoordinates = async (pincode) => {
   const apiUrl = `https://nominatim.openstreetmap.org/search?postalcode=${pincode}&format=json&limit=1`
-  const { data } = await axiosInstance.get(apiUrl, { withCredentials: false });
-  if (data.length === 0) throw new Error("Coordinates not found");
-  const { lon, lat } = data[0];
-  return [lon, lat];
+  const { data } = await axiosInstance.get(apiUrl, { withCredentials: false })
+  if (data.length === 0) throw new Error("Coordinates not found")
+  const { lon, lat } = data[0]
+  return [lon, lat]
 }
 
-// func to signup user
-const submitSignup = async ({url,formData}) => {
+const submitSignup = async ({url, formData}) => {
   const response = await axiosInstance.post(url, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
-  });
-  return response.data;
-}
-const Signup = () => {
-  const [userType, setUserType] = useState(null);
-  const avatarImage = useRef(null);
-  const [avatar, setAvatar] = useState("");
-  const { register, handleSubmit, formState: { errors }, setValue} = useForm();
-
-const fetchCoordinatesMutation = useMutation({
-  mutationFn:(pincode) => fetchCoordinates(pincode)
-})
-
-const submitSignupMutation = useMutation({
-  mutationFn: submitSignup,
-  onSuccess: (data) => {
-    alert("Sign up successful!");
-    console.log("Server response:", data);
-  },
-  onError: (error) => {
-    alert(`Error during signup: ${error.message}`);
-  },
-});
-
-const handleAvatarChange = (event) => {
-  setAvatar(event.target.files[0])
-  setValue('avatarImage', event.target.files[0]); // update form state
+  })
+  return response.data
 }
 
-const handleAvatarClick = () => {
-  avatarImage.current.click();
-}
+export default function Signup() {
+  const [userType, setUserType] = useState(null)
+  const avatarImage = useRef(null)
+  const [avatar, setAvatar] = useState("")
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm()
 
-const createFormData = (data) => {
-  const formData = new FormData();
-  // add all form fields to formData
-  Object.entries(data).forEach(([key, value]) => {
-    if (value !== undefined) formData.append(key, value);
-  });
-  return formData;
-};
+  const fetchCoordinatesMutation = useMutation({
+    mutationFn: (pincode) => fetchCoordinates(pincode)
+  })
+
+  const submitSignupMutation = useMutation({
+    mutationFn: submitSignup,
+    onSuccess: (data) => {
+      alert("Sign up successful!")
+      console.log("Server response:", data)
+    },
+    onError: (error) => {
+      alert(`Error during signup: ${error.message}`)
+    },
+  })
+
+  const handleAvatarChange = (event) => {
+    setAvatar(event.target.files[0])
+    setValue('avatarImage', event.target.files[0])
+  }
+
+  const handleAvatarClick = () => {
+    avatarImage.current.click()
+  }
+
+  const createFormData = (data) => {
+    const formData = new FormData()
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== undefined) formData.append(key, value)
+    })
+    return formData
+  }
 
   const onSubmit = async (data) => {
-
     try {
-    
-     const coordinates = await fetchCoordinatesMutation.mutateAsync(data.pincode)
-
-      // append coordinates to location object
-      data.coordinates = coordinates;
-      
-      // create formdata
-      const formData = createFormData(data);
-      
-      // Set the API URL based on user type
-      const apiUrl = `/users/${userType}-signup`;
-  
-      // Call the signup API
-      submitSignupMutation.mutate({ url: apiUrl, formData });
+      const coordinates = await fetchCoordinatesMutation.mutateAsync(data.pincode)
+      data.coordinates = coordinates
+      const formData = createFormData(data)
+      const apiUrl = `/users/${userType}-signup`
+      submitSignupMutation.mutate({ url: apiUrl, formData })
     } catch (error) {
       console.error(error)
     }
-  };
-
+  }
 
   const renderForm = () => {
     if (!userType) {
       return (
         <div className="text-center">
-          <h2 className="text-2xl font-semibold mb-6">Are you a Donor or a Recipient?</h2>
+          <h2 className="text-2xl font-semibold mb-6">Choose Your Role</h2>
           <div className="space-x-4">
             <button
               type="button"
-              className="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg font-medium transition duration-300 ease-in-out hover:bg-blue-600 hover:shadow-lg"
+              className="bg-green-600 text-white px-6 py-3 rounded-md text-lg font-medium transition duration-300 ease-in-out hover:bg-green-700 shadow-md hover:shadow-lg"
               onClick={() => setUserType('donor')}
             >
-              Donor
+              I'm a Donor
             </button>
             <button
               type="button"
-              className="bg-green-500 text-white px-6 py-3 rounded-lg text-lg font-medium transition duration-300 ease-in-out hover:bg-green-600 hover:shadow-lg"
+              className="bg-green-600 text-white px-6 py-3 rounded-md text-lg font-medium transition duration-300 ease-in-out hover:bg-green-700 shadow-md hover:shadow-lg"
               onClick={() => setUserType('recipient')}
             >
-              Recipient
+              I'm a Recipient
             </button>
           </div>
         </div>
-      );
+      )
     }
 
     return (
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* avatar */}
-        <div className=' flex justify-center items-center'>
-          <label htmlFor="avatarImage"></label>
-          <div className="w-[10em] h-[10em] rounded-full border-black border-[2px]" 
-            style={{
-              backgroundImage:avatar? `url(${URL.createObjectURL(avatar)})`:"none",
-              backgroundSize:"cover",
-              backgroundPosition:"center"
-            }}
+        <div className="flex justify-center mb-6">
+          <div
+            className="w-32 h-32 rounded-full border-4 border-green-200 overflow-hidden cursor-pointer transition-all duration-300 hover:border-green-400"
             onClick={handleAvatarClick}
           >
+            {avatar ? (
+              <img src={URL.createObjectURL(avatar)} alt="Avatar" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full bg-green-50 flex items-center justify-center text-green-400 text-4xl">
+                +
+              </div>
+            )}
           </div>
-          <input 
-            type="file" 
+          <input
+            type="file"
             {...register("avatarImage")}
-            onChange={handleAvatarChange} 
-            ref={avatarImage} 
-            className='hidden'
-            
+            onChange={handleAvatarChange}
+            ref={avatarImage}
+            className="hidden"
           />
         </div>
-        {/* username */}
-        <div>
-          <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-          <input
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <InputField
+            label="Username"
             id="username"
-            {...register('username', { required: 'Username is required' })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            register={register}
+            errors={errors}
+            required
           />
-          {errors.username && <p className="mt-1 text-sm text-red-600">{errors.username.message}</p>}
-        </div>
-        {/* email */}
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-          <input
+          <InputField
+            label="Email"
             id="email"
             type="email"
-            {...register('email', { required: 'Email is required' })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            register={register}
+            errors={errors}
+            required
           />
-          {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
-        </div>
-        {/* phoneno */}
-        <div>
-          <label htmlFor="phoneNo" className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-          <input
+          <InputField
+            label="Phone Number"
             id="phoneNo"
-            {...register('phoneNo', { required: 'Phone number is required' })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            register={register}
+            errors={errors}
+            required
           />
-          {errors.phoneNo && <p className="mt-1 text-sm text-red-600">{errors.phoneNo.message}</p>}
-        </div>
-        {/* password */}
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-          <input
+          <InputField
+            label="Password"
             id="password"
             type="password"
-            {...register('password', { required: 'Password is required', minLength: { value: 6, message: 'Password must be at least 8 characters' } })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            register={register}
+            errors={errors}
+            required
+            minLength={8}
           />
-          {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>}
-        </div>
-        {/* address */}
-        <div>
-          <label htmlFor="address" className='block text-sm font-medium text-gray-700 mb-1'>Address</label>
-          <input 
+          <InputField
+            label="Address"
             id="address"
-            type="text"
-            {...register('address', { required: 'Address is required' })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            register={register}
+            errors={errors}
+            required
           />
-          {errors.address && <p className="mt-1 text-sm text-red-600">{errors.address.message}</p>}
-        </div>
-        {/* city */}
-        <div>
-          <label htmlFor="city" className='block text-sm font-medium text-gray-700 mb-1'>City</label>
-          <input 
+          <InputField
+            label="City"
             id="city"
-            type="text"
-            {...register('city', { required: 'City is required' })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            register={register}
+            errors={errors}
+            required
           />
-          {errors.city && <p className="mt-1 text-sm text-red-600">{errors.city.message}</p>}
-        </div>
-        {/* state */}
-        <div>
-          <label htmlFor="state" className='block text-sm font-medium text-gray-700 mb-1'>State</label>
-          <input 
+          <InputField
+            label="State"
             id="state"
-            type="text"
-            {...register('state', { required: 'State is required' })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            register={register}
+            errors={errors}
+            required
           />
-          {errors.state && <p className="mt-1 text-sm text-red-600">{errors.state.message}</p>}
-        </div>
-        {/* pincode */}
-        <div>
-          <label htmlFor="pincode" className='block text-sm font-medium text-gray-700 mb-1'>Pincode</label>
-          <input 
+          <InputField
+            label="Pincode"
             id="pincode"
-            type="text"
-            {...register('pincode', { required: 'Pincode is required' })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            register={register}
+            errors={errors}
+            required
           />
-          {errors.pincode && <p className="mt-1 text-sm text-red-600">{errors.pincode.message}</p>}
-        </div>
 
-        {/* donor  */}
-        {userType === 'donor' && (
-          <div>
-            <label htmlFor="donorType" className="block text-sm font-medium text-gray-700 mb-1">Donor Type</label>
-            <select
+          {userType === 'donor' && (
+            <SelectField
+              label="Donor Type"
               id="donorType"
-              {...register('donorType', { required: 'Donor type is required' })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">Select donor type</option>
-              <option value="individual">Individual</option>
-              <option value="restaurant">Restaurant</option>
-            </select>
-            {errors.donorType && <p className="mt-1 text-sm text-red-600">{errors.donorType.message}</p>}
-          </div>
-        )}
+              register={register}
+              errors={errors}
+              required
+              options={[
+                { value: "individual", label: "Individual" },
+                { value: "restaurant", label: "Restaurant" },
+              ]}
+            />
+          )}
 
-        {/* recipient */}
-        {userType === 'recipient' && (
-          <>
-            <div>
-              <label htmlFor="organizationType" className="block text-sm font-medium text-gray-700 mb-1">Organization Type</label>
-              <select
+          {userType === 'recipient' && (
+            <>
+              <SelectField
+                label="Organization Type"
                 id="organizationType"
-                {...register('organizationType', { required: 'Organization type is required' })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">Select organization type</option>
-                <option value="charity">Charity</option>
-                <option value="shelter">Shelter</option>
-                <option value="community group">Community Group</option>
-                <option value="NGO">NGO</option>
-              </select>
-              {errors.organizationType && <p className="mt-1 text-sm text-red-600">{errors.organizationType.message}</p>}
-            </div>
-
-            <div>
-              <label htmlFor="registrationNo" className="block text-sm font-medium text-gray-700 mb-1">Registration Number</label>
-              <input
-                id="registrationNo"
-                {...register('registrationNo')}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                register={register}
+                errors={errors}
+                required
+                options={[
+                  { value: "charity", label: "Charity" },
+                  { value: "shelter", label: "Shelter" },
+                  { value: "community group", label: "Community Group" },
+                  { value: "NGO", label: "NGO" },
+                ]}
               />
-              {errors.registrationNo && <p className="mt-1 text-sm text-red-600">{errors.registrationNo.message}</p>}
-            </div>
-          </>
-        )}
+              <InputField
+                label="Registration Number"
+                id="registrationNo"
+                register={register}
+                errors={errors}
+                required
+              />
+            </>
+          )}
+        </div>
 
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white px-6 py-3 rounded-lg text-lg font-medium transition duration-300 ease-in-out hover:bg-blue-600 hover:shadow-lg"
+          className="w-full bg-green-600 text-white px-6 py-3 rounded-md text-lg font-medium transition duration-300 ease-in-out hover:bg-green-700 shadow-md hover:shadow-lg"
         >
           Register as {userType === 'donor' ? 'Donor' : 'Recipient'}
         </button>
       </form>
-    );
-  };
+    )
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="w-full max-w-2xl p-8 bg-white rounded-xl shadow-2xl">
-        <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">User Registration</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-green-100 via-teal-100 to-blue-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl w-full space-y-8 bg-white p-10 rounded-lg shadow-lg border border-green-100">
+        <div>
+          <h1 className="text-4xl font-bold text-center text-green-800">Join FeedForward</h1>
+          <p className="mt-2 text-center text-lg text-gray-600">
+            Sign up to start making a difference in reducing food waste
+          </p>
+        </div>
         {renderForm()}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Signup;
+function InputField({ label, id, register, errors, required, type = "text", minLength }) {
+  return (
+    <div>
+      <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <input
+        id={id}
+        type={type}
+        {...register(id, { 
+          required: required ? `${label} is required` : false,
+          minLength: minLength ? { value: minLength, message: `${label} must be at least ${minLength} characters` } : undefined
+        })}
+        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200"
+      />
+      {errors[id] && <p className="mt-1 text-sm text-red-600">{errors[id].message}</p>}
+    </div>
+  )
+}
+
+function SelectField({ label, id, register, errors, required, options }) {
+  return (
+    <div>
+      <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <select
+        id={id}
+        {...register(id, { required: required ? `${label} is required` : false })}
+        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200"
+      >
+        <option value="">Select {label}</option>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>{option.label}</option>
+        ))}
+      </select>
+      {errors[id] && <p className="mt-1 text-sm text-red-600">{errors[id].message}</p>}
+    </div>
+  )
+}
