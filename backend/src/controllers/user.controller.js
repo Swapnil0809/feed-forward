@@ -389,4 +389,19 @@ const userLogout = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "User logged out successfully"));
 });
 
-export { donorSignUp, recipientSignUp, userLogin, createCityAdmin, userLogout };
+const getUserProfile = asyncHandler(async (req, res) => {
+  console.log("User profile fetched successfully");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, req.user, "User profile fetched successfully"));
+});
+
+export {
+  donorSignUp,
+  recipientSignUp,
+  userLogin,
+  createCityAdmin,
+  userLogout,
+  getUserProfile,
+};
