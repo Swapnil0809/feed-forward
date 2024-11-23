@@ -25,4 +25,25 @@ const uploadOnCloudinary = async (localFilePath) => {
   }
 };
 
-export { uploadOnCloudinary };
+const deleteFromCloudinary = async (url) => {
+  try {
+    const parts = url.split("/");
+    const fileWithExtension = parts[parts.length - 1]; // Get the last part (e.g., image.jpg)
+    const publicId = fileWithExtension.split(".")[0]; // Remove file extension
+
+    const response = await cloudinary.uploader.destroy(publicId);
+
+    if (response.result === "ok") {
+      console.log("File deleted from Cloudinary:", publicId);
+    } else {
+      console.warn("File not found or already deleted:", publicId);
+    }
+
+    return response;
+  } catch (error) {
+    console.error("Error while deleting file from Cloudinary:", error);
+    throw error;
+  }
+};
+
+export { uploadOnCloudinary, deleteFromCloudinary };
