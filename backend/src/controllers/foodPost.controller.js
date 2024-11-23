@@ -206,4 +206,18 @@ const deleteFoodPost = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Food post deleted successfully"));
 });
 
-export { addFoodPost, updateFoodPost, deleteFoodPost };
+const getDonorFoodPosts = asyncHandler(async (req, res) => {
+  const foodPosts = await FoodPost.find({ postedBy: req.user._id });
+
+  if (!foodPosts) {
+    throw new ApiError(404, "No food posts found");
+  }
+
+  console.log("Food posts fetched successfully");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, foodPosts, "Food posts fetched successfully"));
+});
+
+export { addFoodPost, updateFoodPost, deleteFoodPost, getDonorFoodPosts };

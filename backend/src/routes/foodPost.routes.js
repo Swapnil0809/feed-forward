@@ -3,6 +3,7 @@ import {
   addFoodPost,
   updateFoodPost,
   deleteFoodPost,
+  getDonorFoodPosts,
 } from "../controllers/foodPost.controller.js";
 import { verifyJWT, isDonor } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -19,5 +20,7 @@ router
   .patch(upload.array("images"), verifyJWT, isDonor, updateFoodPost);
 
 router.route("/delete-post/:postId").delete(verifyJWT, isDonor, deleteFoodPost);
+
+router.route("/get-donor-posts").get(verifyJWT, isDonor, getDonorFoodPosts);
 
 export default router;
