@@ -4,8 +4,13 @@ import {
   updateFoodPost,
   deleteFoodPost,
   getDonorFoodPosts,
+  getAvailableFoodPosts,
 } from "../controllers/foodPost.controller.js";
-import { verifyJWT, isDonor } from "../middlewares/auth.middleware.js";
+import {
+  verifyJWT,
+  isDonor,
+  isRecipient,
+} from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
 const router = Router();
@@ -22,5 +27,9 @@ router
 router.route("/delete-post/:postId").delete(verifyJWT, isDonor, deleteFoodPost);
 
 router.route("/get-donor-posts").get(verifyJWT, isDonor, getDonorFoodPosts);
+
+router
+  .route("/get-available-posts")
+  .get(verifyJWT, isRecipient, getAvailableFoodPosts);
 
 export default router;

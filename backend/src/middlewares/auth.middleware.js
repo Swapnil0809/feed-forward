@@ -33,6 +33,9 @@ export const isRecipient = asyncHandler(async (req, _, next) => {
   if (req.user?.role !== "Recipient") {
     throw new ApiError(401, "Unauthorized access to recipient");
   }
+  if (!req.user?.isVerified) {
+    throw new ApiError(401, "Recipient account not verified");
+  }
   next();
 });
 

@@ -216,7 +216,7 @@ const recipientSignUp = asyncHandler(async (req, res) => {
 
   const message = `
     <p>New Recipient has registered themselves on our FeedForward Platform <br/>
-    Please verify the recipient so that they can start using our platform, there details are: <br/>
+    Please verify the recipient so that they can start using our platform, their details are: <br/>
     <b>usename</b>:${createdUser.username}<br/>
     <b>email</b>:${createdUser.email}<br/>
     <b>phoneno</b>:${createdUser.phoneNo}<br/>

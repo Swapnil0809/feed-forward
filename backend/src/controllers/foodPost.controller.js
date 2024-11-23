@@ -120,7 +120,6 @@ const updateFoodPost = asyncHandler(async (req, res) => {
 
   // handle image update
   if (req.files?.length > 0) {
-    
     // delete existing images from Cloudinary
     for (const imageUrl of foodPost.images) {
       await deleteFromCloudinary(imageUrl);
@@ -220,4 +219,29 @@ const getDonorFoodPosts = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, foodPosts, "Food posts fetched successfully"));
 });
 
-export { addFoodPost, updateFoodPost, deleteFoodPost, getDonorFoodPosts };
+const getAvailableFoodPosts = asyncHandler(async (req, res) => {
+  const foodPosts = await FoodPost.find({
+    "location.properties.city": req.user.location.properties.city,
+    status: "available",
+  });
+
+  console.log("Available food posts fetched successfully");
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        foodPosts,
+        "Available food posts fetched successfully"
+      )
+    );
+});
+
+export {
+  addFoodPost,
+  updateFoodPost,
+  deleteFoodPost,
+  getDonorFoodPosts,
+  getAvailableFoodPosts,
+};
