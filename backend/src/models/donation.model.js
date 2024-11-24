@@ -2,9 +2,13 @@ import mongoose, { Schema } from "mongoose";
 
 const donationSchema = new Schema(
   {
-    postId: {
+    foodPostId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "FoodPost",
+    },
+    foodRequestId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "FoodRequest",
     },
     donorId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -16,11 +20,7 @@ const donationSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["awating", "delivered"],
-    },
-    feedback: {
-      type: String,
-      trim: true,
+      enum: ["in-progress", "delivered"],
     },
   },
   { timestamps: true }
