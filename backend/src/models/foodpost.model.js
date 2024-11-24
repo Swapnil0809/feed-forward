@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import { locationSchema } from "./location.model.js";
 
-const foodpostSchema = new Schema(
+const foodPostSchema = new Schema(
   {
     postedBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -25,6 +25,7 @@ const foodpostSchema = new Schema(
     },
     foodType: {
       type: String,
+      enum: ["veg", "non-veg"],
     },
     expiryDate: {
       type: Date,
@@ -41,4 +42,4 @@ const foodpostSchema = new Schema(
   { timestamps: true }
 );
 
-export const FoodPost = mongoose.model("FoodPost", foodpostSchema);
+export const FoodPost = mongoose.model("FoodPost", foodPostSchema);

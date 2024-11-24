@@ -1,7 +1,7 @@
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "express-async-handler";
-import { FoodPost } from "../models/foodpost.model.js";
+import { FoodPost } from "../models/foodPost.model.js";
 import { PostRequest } from "../models/postRequest.model.js";
 
 const addPostRequest = asyncHandler(async (req, res) => {

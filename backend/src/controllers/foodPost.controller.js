@@ -6,7 +6,7 @@ import {
   uploadOnCloudinary,
   deleteFromCloudinary,
 } from "../utils/cloudinary.js";
-import { FoodPost } from "../models/foodpost.model.js";
+import { FoodPost } from "../models/foodPost.model.js";
 
 const addFoodPost = asyncHandler(async (req, res) => {
   const {
@@ -239,7 +239,6 @@ const updateExpiredFoodPosts = asyncHandler(async (city) => {
 });
 
 const getAvailableFoodPosts = asyncHandler(async (req, res) => {
-
   // update expired food posts
   await updateExpiredFoodPosts(req.user.location.properties.city);
 
