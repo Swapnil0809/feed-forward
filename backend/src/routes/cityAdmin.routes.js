@@ -1,5 +1,9 @@
 import { Router } from "express";
-import { verifyRecipient } from "../controllers/cityAdmin.controller.js";
+import {
+  verifyRecipient,
+  getFoodPosts,
+  getFoodRequest,
+} from "../controllers/cityAdmin.controller.js";
 import { verifyJWT, isCityAdmin } from "../middlewares/auth.middleware.js";
 
 const router = Router();
@@ -8,5 +12,8 @@ const router = Router();
 router
   .route("/verify-recipient/:username")
   .post(verifyJWT, isCityAdmin, verifyRecipient);
+
+router.route("/get-food-posts").get(verifyJWT, isCityAdmin, getFoodPosts);
+router.route("/get-food-requests").get(verifyJWT, isCityAdmin, getFoodRequest);
 
 export default router;
