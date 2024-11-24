@@ -1,4 +1,5 @@
 import mongoose, { mongo, Schema } from "mongoose";
+import { locationSchema } from "./location.model";
 
 const foodRequestSchema = new Schema({
   requestedBy: {
@@ -20,6 +21,7 @@ const foodRequestSchema = new Schema({
     type: String,
     enum: ["veg", "non-veg", "both"],
   },
+  location: locationSchema,
   status: {
     type: String,
     enum: ["unfulfilled", "fulfilled"],
