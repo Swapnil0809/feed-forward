@@ -1,10 +1,12 @@
 import { Router } from "express";
-import { addRequest } from "../controllers/request.controller";
-import { isRecipient, verifyJWT } from "../middlewares/auth.middleware";
+import { addPostRequest } from "../controllers/postRequest.controller.js";
+import { isRecipient, verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
 // secured routes
-router.route("/add-request/:postId").post(verifyJWT, isRecipient, addRequest);
+router
+  .route("/add-request/:postId")
+  .post(verifyJWT, isRecipient, addPostRequest);
 
 export default router;

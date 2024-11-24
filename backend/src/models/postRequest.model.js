@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const requestSchema = new Schema(
+const postRequestSchema = new Schema(
   {
     requestedBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -18,4 +18,4 @@ const requestSchema = new Schema(
   { timestamps: true }
 );
 
-export const Request = mongoose.model("Request", requestSchema);
+export const PostRequest = mongoose.model("Request", postRequestSchema);
