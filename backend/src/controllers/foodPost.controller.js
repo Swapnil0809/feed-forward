@@ -121,9 +121,10 @@ const updateFoodPost = asyncHandler(async (req, res) => {
   // handle image update
   if (req.files?.length > 0) {
     // delete existing images from Cloudinary
-    for (const imageUrl of foodPost.images) {
-      await deleteFromCloudinary(imageUrl);
-    }
+    const deletePromises = foodPost.images.map((imageUrl) =>
+      deleteFromCloudinary(imageUrl)
+    );
+    const deleteResults = await Promise.all(deletePromises);
 
     // upload new images to Cloudinary
     const uploadPromises = req.files.map((file) =>
@@ -219,7 +220,29 @@ const getDonorFoodPosts = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, foodPosts, "Food posts fetched successfully"));
 });
 
+const updateExpiredFoodPosts = asyncHandler(async (city) => {
+  const currentDate = new Date();
+
+  // query to update expired food posts
+  const result = await FoodPost.updateMany(
+    {
+      "location.properties.city": city,
+      expiryDate: { $lte: currentDate },
+      status: { $ne: "expired" }, // Only update non-expired posts
+    },
+    { $set: { status: "expired" } }
+  );
+
+  console.log(
+    `${result.modifiedCount} food posts in city '${city}' were marked as expired.`
+  );
+});
+
 const getAvailableFoodPosts = asyncHandler(async (req, res) => {
+
+  // update expired food posts
+  await updateExpiredFoodPosts(req.user.location.properties.city);
+
   const foodPosts = await FoodPost.find({
     "location.properties.city": req.user.location.properties.city,
     status: "available",
