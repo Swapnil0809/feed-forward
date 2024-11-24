@@ -31,7 +31,7 @@ app.use(cookieParser());
 import userRouter from "./routes/user.routes.js";
 import cityAdminRouter from "./routes/cityAdmin.routes.js";
 import foodPostRouter from "./routes/foodPost.routes.js";
-import postRequestRouter from "./routes/request.routes.js";
+import postRequestRouter from "./routes/postRequest.routes.js";
 import foodRequestRouter from "./routes/foodRequest.routes.js";
 
 // routes declarations
