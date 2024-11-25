@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import axiosInstance from '../utils/axiosInstance';
+import { useNavigate } from 'react-router-dom';
 
 const fetchCoordinates = async (pincode) => {
   const apiUrl = `https://nominatim.openstreetmap.org/search?postalcode=${pincode}&format=json&limit=1`;
@@ -24,6 +25,8 @@ export default function Signup() {
   const [avatar, setAvatar] = useState("");
   const { register, handleSubmit, formState: { errors }, setValue } = useForm();
 
+  const navigate = useNavigate();
+
   const fetchCoordinatesMutation = useMutation({
     mutationFn: (pincode) => fetchCoordinates(pincode)
   });
@@ -33,9 +36,10 @@ export default function Signup() {
     onSuccess: (data) => {
       alert("Sign up successful!");
       console.log("Server response:", data);
+      navigate('/login');
     },
     onError: (error) => {
-      alert(`Error during signup: ${error.message}`);
+      console.log(error)
     },
   });
 

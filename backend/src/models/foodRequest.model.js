@@ -1,5 +1,5 @@
-import mongoose, { mongo, Schema } from "mongoose";
-import { locationSchema } from "./location.model";
+import mongoose, { Schema } from "mongoose";
+import { locationSchema } from "./location.model.js";
 
 const foodRequestSchema = new Schema({
   requestedBy: {

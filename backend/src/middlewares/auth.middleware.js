@@ -47,18 +47,8 @@ export const isCityAdmin = asyncHandler(async (req, _, next) => {
 });
 
 export const isAdmin = asyncHandler(async (req, _, next) => {
-  try {
-    const token =
-      req.cookies?.token || req.header("Authorization")?.replace("Bearer ", "");
-    if (!token) {
-      throw new ApiError(400, "Unauthorized access to admin");
-    }
-    const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
-    if (decodedToken.role !== "admin") {
-      throw new ApiError(401, "Invalid access token");
-    }
-    next();
-  } catch (error) {
-    throw new ApiError(401, error?.message);
+  if (req.user?.role !== "Admin") {
+    throw new ApiError(401, "Unauthorized access to admin");
   }
+  next();
 });

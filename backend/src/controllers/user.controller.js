@@ -1,4 +1,4 @@
-import { User } from "../models/user.model.js";
+import { Admin, User } from "../models/user.model.js";
 import { CityAdmin, Donor, Recipient } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -74,8 +74,8 @@ const donorSignUp = asyncHandler(async (req, res) => {
     coordinates: [lon, lat],
     properties: {
       address,
-      state,
-      city,
+      state: state.toLowerCase(),
+      city: city.toLowerCase(),
       pincode,
     },
   };
@@ -171,8 +171,8 @@ const recipientSignUp = asyncHandler(async (req, res) => {
     coordinates: [lon, lat],
     properties: {
       address,
-      state,
-      city,
+      state: state.toLowerCase(),
+      city: city.toLowerCase(),
       pincode,
     },
   };
@@ -245,28 +245,19 @@ const userLogin = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Email and password are required!");
   }
 
-  let token;
+  const user = await User.findOne({ $or: [{ username }, { email }] });
 
-  if (
-    email === process.env.ADMIN_EMAIL &&
-    password === process.env.ADMIN_PASS
-  ) {
-    token = generateToken(1, "admin");
-  } else {
-    const user = await User.findOne({ $or: [{ username }, { email }] });
-
-    if (!user) {
-      throw new ApiError(404, "User not found");
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordValid) {
-      throw new ApiError(400, "Invalid password");
-    }
-
-    token = generateToken(user._id, user.role);
+  if (!user) {
+    throw new ApiError(404, "User not found");
   }
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+
+  if (!isPasswordValid) {
+    throw new ApiError(400, "Invalid password");
+  }
+
+  const token = generateToken(user._id, user.role);
 
   const options = {
     httpOnly: true,
@@ -332,8 +323,8 @@ const createCityAdmin = asyncHandler(async (req, res) => {
     coordinates: [lon, lat],
     properties: {
       address,
-      state,
-      city,
+      state: state.toLowerCase(),
+      city: city.toLowerCase(),
       pincode,
     },
   };

@@ -4,8 +4,8 @@ import { locationSchema } from "./location.model.js";
 // base user schema
 const userSchema = new Schema(
   {
-    avatar:{
-      type:String // cloudinary url
+    avatar: {
+      type: String, // cloudinary url
     },
     username: {
       type: String,
@@ -65,3 +65,7 @@ export const Recipient = User.discriminator("Recipient", recipientSchema);
 const cityAdminSchema = new Schema({});
 
 export const CityAdmin = User.discriminator("CityAdmin", cityAdminSchema);
+
+const adminSchema = new Schema({});
+
+export const Admin = User.discriminator("Admin", adminSchema);

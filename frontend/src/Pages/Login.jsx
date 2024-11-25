@@ -1,16 +1,33 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../utils/axiosInstance';
+import { useMutation } from '@tanstack/react-query';
+
+const submitLogin = async (formData) => {
+  const response = await axiosInstance.post('/users/login', formData);
+  return response.data;
+}
+
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const navigate = useNavigate();
 
+  const submitLoginMutation = useMutation({
+    mutationFn: submitLogin,
+    onSuccess:(data) => {
+      console.log(data)
+      navigate('/dashboard');
+    },
+    onError:(error) => {
+      console.log(error)
+    }
+  })
+
   const onSubmit = (data) => {
     console.log(data);
-    // Here you would typically make an API call to authenticate the user
-    // For demonstration, we'll just navigate to a dashboard based on a hardcoded role
-    navigate('/donor-dashboard');
+    submitLoginMutation.mutate(data);
   };
 
   return (
@@ -44,7 +61,7 @@ const Login = () => {
             type="submit"
             className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out mt-6"
           >
-            Sign In
+            Login
           </button>
         </form>
         <div className="mt-4 text-center">
