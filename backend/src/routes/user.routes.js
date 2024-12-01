@@ -20,7 +20,7 @@ router.route("/login").post(userLogin);
 
 // secured routes
 router.route("/logout").post(verifyJWT, userLogout);
-router.route("/create-city-admin").post(isAdmin, createCityAdmin);
+router.route("/create-city-admin").post(verifyJWT, isAdmin, createCityAdmin);
 router.route("/get-user-profile").get(verifyJWT, getUserProfile);
 
 export default router;

@@ -30,7 +30,10 @@ function Dashboard() {
     <div>
         <Header/>
         <main>
-          <UserProfile user={user}/>
+          <div className='max-w-7xl mx-auto flex flex-wrap items-center gap-5 p-5 my-5 rounded-lg border-black border-[2px]'>
+            <h1 className=' basis-full text-3xl font-bold text-gray-900'>{user.role} Dashboard</h1>
+            <UserProfile user={user}/>
+          </div>
           {user?.role === "Admin" && <AdminDashboard />}
           {user?.role === "CityAdmin" && <CityAdminDashboard />}
           {user?.role === "Donor" && <DonorDashboard />}
