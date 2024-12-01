@@ -21,7 +21,7 @@ const Login = () => {
   const submitLoginMutation = useMutation({
     mutationFn: submitLogin,
     onSuccess:(data) => {
-      toast.success("Logged In Successfully")
+      toast.success("login successful")
       console.log(data)
       navigate('/dashboard');
     },
@@ -30,7 +30,7 @@ const Login = () => {
     }
   })
 
-  const onSubmit = (data) => {
+  const handleSubmit = (data) => {
     console.log(data);
     submitLoginMutation.mutate(data);
   };
@@ -39,7 +39,7 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-green-100 via-teal-100 to-blue-100 px-4 sm:px-6 lg:px-8">
       <div className="bg-white p-6 sm:p-8 rounded-lg shadow-md w-full max-w-md">
         <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-center text-gray-800">Login to FeedForward</h2>
-        <FormWrapper onSubmit={onSubmit} schema={loginSchema}>
+        <FormWrapper onSubmit={handleSubmit} schema={loginSchema}>
           {/* Username Field */}
           <Input name="username" label="Username" type="text" />
           {/* Password Field */}

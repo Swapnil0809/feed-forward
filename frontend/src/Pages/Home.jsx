@@ -29,7 +29,6 @@ const Home = () => {
           </div>
         </nav>
       </header>
-
       {/* Hero Section */}
       <main className="flex-grow flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-24 relative z-10">
         <div className="max-w-7xl w-full flex flex-col md:flex-row items-center justify-between space-y-8 md:space-y-0 md:space-x-8">

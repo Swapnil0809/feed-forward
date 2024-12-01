@@ -1,6 +1,8 @@
 import React from 'react'
 import { useQuery,useMutation } from '@tanstack/react-query';
+
 import axiosInstance from '../utils/axiosInstance';
+import Header from '../components/Header';
 import AdminDashboard from "../components/AdminDashboard"
 import CityAdminDashboard from "../components/CityAdminDashboard";
 import DonorDashboard from "../components/DonorDashboard";
@@ -26,11 +28,14 @@ function Dashboard() {
 
   return (
     <div>
-        <UserProfile user={user}/>
-        {user?.role === "Admin" && <AdminDashboard />}
-        {user?.role === "CityAdmin" && <CityAdminDashboard />}
-        {user?.role === "Donor" && <DonorDashboard />}
-        {user?.role === "Recipient" && <RecipientDashboard />}
+        <Header/>
+        <main>
+          <UserProfile user={user}/>
+          {user?.role === "Admin" && <AdminDashboard />}
+          {user?.role === "CityAdmin" && <CityAdminDashboard />}
+          {user?.role === "Donor" && <DonorDashboard />}
+          {user?.role === "Recipient" && <RecipientDashboard />}
+        </main>
     </div>
   )
 }

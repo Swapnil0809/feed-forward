@@ -2,6 +2,7 @@ import React, { useState} from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { z } from "zod";
+import toast from 'react-hot-toast';
 
 import FormWrapper from '../components/formComponents/FormWrapper';
 import FileInput from '../components/formComponents/FileInput';
@@ -16,10 +17,10 @@ const signupSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   avatarImage: z.instanceof(File).optional(),
-  address: z.string().optional(),
-  city: z.string().optional(),
-  state: z.string().optional(),
-  pincode: z.string().optional(),
+  address: z.string().nonempty("Address is required"),
+  city: z.string().nonempty("City is required"),
+  state: z.string().nonempty("State is required"),
+  pincode: z.string().nonempty("Pincode is required"),
   donorType: z.string().optional(),
   organizationType: z.string().optional(),
   registrationNo: z.string().optional()
@@ -39,7 +40,7 @@ export default function Signup() {
   const submitSignupMutation = useMutation({
     mutationFn: submitSignup,
     onSuccess: (data) => {
-      alert("Sign up successful!");
+      toast.success("signup successful")
       console.log("Server response:", data);
       navigate('/login');
     },
@@ -64,7 +65,7 @@ export default function Signup() {
     return formData;
   };
 
-  const onSubmit = async (data) => {
+  const handleSubmit = async (data) => {
     try {
       console.log(data)
       const coordinates = await fetchCoordinatesMutation.mutateAsync(data.pincode);
@@ -103,7 +104,7 @@ export default function Signup() {
     }
 
     return (
-      <FormWrapper onSubmit={onSubmit} schema={signupSchema}>
+      <FormWrapper onSubmit={handleSubmit} schema={signupSchema}>
         <div className="flex justify-center mb-6">
           {/* <div
             className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-green-200 overflow-hidden cursor-pointer transition-all duration-300 hover:border-green-400"
