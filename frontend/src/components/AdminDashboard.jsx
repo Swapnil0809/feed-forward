@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { useForm } from 'react-hook-form';
 import Layout from './Layout';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -11,28 +12,12 @@ const AdminDashboard = () => {
     { id: 2, name: 'Bob Williams', city: 'Los Angeles' },
   ]);
 
-  const [newAdmin, setNewAdmin] = useState({ name: '', city: '' });
   const [editingAdmin, setEditingAdmin] = useState(null);
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm();
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    if (editingAdmin) {
-      setEditingAdmin({ ...editingAdmin, [name]: value });
-    } else {
-      setNewAdmin({ ...newAdmin, [name]: value });
-    }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (editingAdmin) {
-      setCityAdmins(cityAdmins.map(admin => admin.id === editingAdmin.id ? editingAdmin : admin));
-      setEditingAdmin(null);
-    } else {
-      setCityAdmins([...cityAdmins, { ...newAdmin, id: Date.now() }]);
-      setNewAdmin({ name: '', city: '' });
-    }
-  };
+  const onSubmit = (data) => {
+    console.log(data)
+  }
 
   const handleEdit = (admin) => {
     setEditingAdmin(admin);
@@ -80,23 +65,7 @@ const AdminDashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold mb-4">{editingAdmin ? 'Edit City Admin' : 'Create City Admin'}</h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <input
-              className="w-full p-2 border rounded"
-              placeholder="Name"
-              name="name"
-              value={editingAdmin ? editingAdmin.name : newAdmin.name}
-              onChange={handleInputChange}
-              required
-            />
-            <input
-              className="w-full p-2 border rounded"
-              placeholder="City"
-              name="city"
-              value={editingAdmin ? editingAdmin.city : newAdmin.city}
-              onChange={handleInputChange}
-              required
-            />
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
               {editingAdmin ? 'Update City Admin' : 'Create City Admin'}
             </button>

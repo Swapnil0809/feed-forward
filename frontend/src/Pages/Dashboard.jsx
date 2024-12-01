@@ -5,6 +5,7 @@ import AdminDashboard from "../components/AdminDashboard"
 import CityAdminDashboard from "../components/CityAdminDashboard";
 import DonorDashboard from "../components/DonorDashboard";
 import RecipientDashboard from "../components/RecipientDashboard";
+import UserProfile from '../components/dashboardComponents/UserProfile';
 
 const fetchUserProfile = async () => {
     const response = await axiosInstance.get('/users/get-user-profile');
@@ -25,6 +26,7 @@ function Dashboard() {
 
   return (
     <div>
+        <UserProfile user={user}/>
         {user?.role === "Admin" && <AdminDashboard />}
         {user?.role === "CityAdmin" && <CityAdminDashboard />}
         {user?.role === "Donor" && <DonorDashboard />}

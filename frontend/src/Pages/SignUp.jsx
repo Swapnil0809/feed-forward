@@ -1,29 +1,34 @@
-import React, { useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useState} from 'react';
 import { useMutation } from '@tanstack/react-query';
-import axiosInstance from '../utils/axiosInstance';
 import { useNavigate } from 'react-router-dom';
+import { z } from "zod";
 
-const fetchCoordinates = async (pincode) => {
-  const apiUrl = `https://nominatim.openstreetmap.org/search?postalcode=${pincode}&format=json&limit=1`;
-  const { data } = await axiosInstance.get(apiUrl, { withCredentials: false });
-  if (data.length === 0) throw new Error("Coordinates not found");
-  const { lon, lat } = data[0];
-  return [lon, lat];
-};
+import FormWrapper from '../components/formComponents/FormWrapper';
+import FileInput from '../components/formComponents/FileInput';
+import Input from '../components/formComponents/Input';
+import Select from '../components/formComponents/Select';
+import { submitSignup } from '../api/users';
+import { fetchCoordinates } from '../api/fetchCoordinates';
 
-const submitSignup = async ({url, formData}) => {
-  const response = await axiosInstance.post(url, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
-  return response.data;
-};
+// Validation Schema with zod
+const signupSchema = z.object({
+  username: z.string().nonempty("Username is required"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  avatarImage: z.instanceof(File).optional(),
+  address: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  pincode: z.string().optional(),
+  donorType: z.string().optional(),
+  organizationType: z.string().optional(),
+  registrationNo: z.string().optional()
+});
 
 export default function Signup() {
   const [userType, setUserType] = useState(null);
-  const avatarImage = useRef(null);
-  const [avatar, setAvatar] = useState("");
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm();
+  // const avatarImage = useRef(null);
+  // const [avatar, setAvatar] = useState("");
 
   const navigate = useNavigate();
 
@@ -43,14 +48,13 @@ export default function Signup() {
     },
   });
 
-  const handleAvatarChange = (event) => {
-    setAvatar(event.target.files[0]);
-    setValue('avatarImage', event.target.files[0]);
-  };
+  // const handleAvatarChange = (event) => {
+  //   setAvatar(event.target.files[0]);
+  // };
 
-  const handleAvatarClick = () => {
-    avatarImage.current.click();
-  };
+  // const handleAvatarClick = () => {
+  //   avatarImage.current.click();
+  // };
 
   const createFormData = (data) => {
     const formData = new FormData();
@@ -62,6 +66,7 @@ export default function Signup() {
 
   const onSubmit = async (data) => {
     try {
+      console.log(data)
       const coordinates = await fetchCoordinatesMutation.mutateAsync(data.pincode);
       data.coordinates = coordinates;
       const formData = createFormData(data);
@@ -90,7 +95,7 @@ export default function Signup() {
               className="bg-green-600 text-white px-6 py-3 rounded-md text-base sm:text-lg font-medium transition duration-300 ease-in-out hover:bg-green-700 shadow-md hover:shadow-lg w-full sm:w-auto"
               onClick={() => setUserType('recipient')}
             >
-              I'm a Recipient
+              I&apos;m a Recipient
             </button>
           </div>
         </div>
@@ -98,9 +103,9 @@ export default function Signup() {
     }
 
     return (
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <FormWrapper onSubmit={onSubmit} schema={signupSchema}>
         <div className="flex justify-center mb-6">
-          <div
+          {/* <div
             className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-green-200 overflow-hidden cursor-pointer transition-all duration-300 hover:border-green-400"
             onClick={handleAvatarClick}
           >
@@ -111,99 +116,44 @@ export default function Signup() {
                 +
               </div>
             )}
-          </div>
-          <input
-            type="file"
-            {...register("avatarImage")}
-            onChange={handleAvatarChange}
-            ref={avatarImage}
-            className="hidden"
-          />
+          </div> */}
+            <FileInput
+              name="avatarImage"
+              label="Avatar Image"
+              multiple={false} // Single file for profile picture
+              previewStyle="profile" // Circular preview
+            />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-          <InputField
-            label="Username"
-            id="username"
-            register={register}
-            errors={errors}
-            required
-          />
-          <InputField
-            label="Email"
-            id="email"
-            type="email"
-            register={register}
-            errors={errors}
-            required
-          />
-          <InputField
-            label="Phone Number"
-            id="phoneNo"
-            register={register}
-            errors={errors}
-            required
-          />
-          <InputField
-            label="Password"
-            id="password"
-            type="password"
-            register={register}
-            errors={errors}
-            required
-            minLength={8}
-          />
-          <InputField
-            label="Address"
-            id="address"
-            register={register}
-            errors={errors}
-            required
-          />
-          <InputField
-            label="City"
-            id="city"
-            register={register}
-            errors={errors}
-            required
-          />
-          <InputField
-            label="State"
-            id="state"
-            register={register}
-            errors={errors}
-            required
-          />
-          <InputField
-            label="Pincode"
-            id="pincode"
-            register={register}
-            errors={errors}
-            required
-          />
-
+          {/* Username Field */}
+          <Input name="username" label="Username" type="text" />
+          {/* Email Field */}
+          <Input name="email" label="Email" type="email" />
+          {/* Password Field */}
+          <Input name="password" label="Password" type="password" />
+          {/* Location Fields */}
+          <Input name="address" label="Address"/>
+          <Input name="city" label="City"/>
+          <Input name="state" label="State"/>
+          <Input name="pincode" label="Pincode"/>
+          {/* donor specific fields */}
           {userType === 'donor' && (
-            <SelectField
+            <Select
+              name="donorType"
               label="Donor Type"
-              id="donorType"
-              register={register}
-              errors={errors}
-              required
               options={[
                 { value: "individual", label: "Individual" },
                 { value: "restaurant", label: "Restaurant" },
               ]}
             />
           )}
-
+          {/* recipient specific fields */}
           {userType === 'recipient' && (
             <>
-              <SelectField
+              <Select
+                name="organizationType"
                 label="Organization Type"
-                id="organizationType"
-                register={register}
-                errors={errors}
-                required
                 options={[
                   { value: "charity", label: "Charity" },
                   { value: "shelter", label: "Shelter" },
@@ -211,13 +161,7 @@ export default function Signup() {
                   { value: "NGO", label: "NGO" },
                 ]}
               />
-              <InputField
-                label="Registration Number"
-                id="registrationNo"
-                register={register}
-                errors={errors}
-                required
-              />
+              <Input name="registrationNo" label="Registration Number"/>
             </>
           )}
         </div>
@@ -228,7 +172,7 @@ export default function Signup() {
         >
           Register as {userType === 'donor' ? 'Donor' : 'Recipient'}
         </button>
-      </form>
+      </FormWrapper>
     );
   };
 
@@ -246,41 +190,3 @@ export default function Signup() {
     </div>
   );
 }
-
-function InputField({ label, id, register, errors, required, type = "text", minLength }) {
-  return (
-    <div>
-      <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-      <input
-        id={id}
-        type={type}
-        {...register(id, { 
-          required: required ? `${label} is required` : false,
-          minLength: minLength ? { value: minLength, message: `${label} must be at least ${minLength} characters` } : undefined
-        })}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200"
-      />
-      {errors[id] && <p className="mt-1 text-sm text-red-600">{errors[id].message}</p>}
-    </div>
-  );
-}
-
-function SelectField({ label, id, register, errors, required, options }) {
-  return (
-    <div>
-      <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-      <select
-        id={id}
-        {...register(id, { required: required ? `${label} is required` : false })}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200"
-      >
-        <option value="">Select {label}</option>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>{option.label}</option>
-        ))}
-      </select>
-      {errors[id] && <p className="mt-1 text-sm text-red-600">{errors[id].message}</p>}
-    </div>
-  );
-}
-
