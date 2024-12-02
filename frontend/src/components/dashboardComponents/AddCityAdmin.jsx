@@ -2,6 +2,7 @@ import React from "react";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import toast from "react-hot-toast";
+import { IoClose } from "react-icons/io5";
 
 import FormWrapper from "../formComponents/FormWrapper";
 import Input from "../formComponents/Input"
@@ -44,17 +45,17 @@ function AddCityAdmin({setAddCityAdmin}) {
   };
 
   return (
-    <div className=" w-full h-full absolute top-0 bg-gray-300 flex justify-center items-center">
-        <div className=" flex flex-wrap">
-            <div className="basis-full">
+    <div className=" w-full h-full absolute top-0 bg-gray-400/80 flex justify-center items-center">
+        <div className=" w-[60%] flex flex-wrap justify-center p-8 rounded-lg bg-white">
+            <div className="basis-full flex justify-end">
                 <button
                     className=" text-xl text-black " 
                     onClick={() => setAddCityAdmin(false)}
                 >
-                    x
+                    <IoClose className=" text-2xl"/>
                 </button>
             </div>
-        <div>
+        <div className=" p-5 border-black border-[2px]">
             <FormWrapper onSubmit={handleSubmit} schema={cityAdminSchema}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 {/* Username Field */}

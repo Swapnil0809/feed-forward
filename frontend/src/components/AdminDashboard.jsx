@@ -29,8 +29,8 @@ const AdminDashboard = () => {
 
   return (
     <>
-      <div className=' max-w-7xl mx-auto flex justify-evenly p-5 border-black border-[2px]'>
-        <div className='w-[50%] p-5 flex flex-col gap-5 border-black border-[2px]'>
+      <div className=' max-w-7xl max-h-[50vh] mx-auto flex p-5 rounded-lg border-black border-[2px]'>
+        <div className='w-[50%] max-h-[90%] p-5 flex flex-col gap-5 rounded-lg border-black border-[2px]'>
           <h1 className=' text-2xl font-bold text-gray-900'>City Admins</h1>
           <button 
             className='w-[8em] p-2 rounded-lg bg-green-500 text-white'
@@ -38,9 +38,10 @@ const AdminDashboard = () => {
           >
             add
           </button>
+          <div className=' flex flex-col gap-5 overflow-y-auto'>
           {
             cityAdmins && cityAdmins.map((cityAdmin) => (
-              <div key={cityAdmin._id} className='flex items-center gap-5 p-5 border-black border-[2px]'>
+              <div key={cityAdmin._id} className='flex justify-evenly items-center  p-5 rounded-lg border-black border-[2px]'>
                 <div className='w-[5em] h-[5em] rounded-full ' 
                   style={{
                     backgroundImage: `url(https://eu.ui-avatars.com/api/?name=${cityAdmin.username}&size=250)`, 
@@ -65,14 +66,10 @@ const AdminDashboard = () => {
               </div>
             ))
           }
+          </div>
         </div>
-        <div className=''>
-          <h3 className=' text-2xl font-bold text-gray-900'>Total cityAdmins: 5</h3>
-          <h3 className=' text-2xl font-bold text-gray-900'>Total Donations Today: 10</h3>
-          <h3 className=' text-2xl font-bold text-gray-900'>Total User : 100</h3>
-        </div>
-        {addCityAdmin && <AddCityAdmin setAddCityAdmin={setAddCityAdmin} />}
       </div>
+      {addCityAdmin && <AddCityAdmin setAddCityAdmin={setAddCityAdmin} />}
     </>
   );
 };

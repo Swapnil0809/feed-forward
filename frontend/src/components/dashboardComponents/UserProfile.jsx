@@ -16,7 +16,6 @@ function UserProfile({user}) {
         <p>{user.email}</p>
         <p>{user.phoneNo}</p>
         <p>{user.location.properties.city}, {user.location.properties.state}</p>
-        <button className=' w-[20%] p-2 rounded-lg bg-black text-white'>Edit</button>
       </div>
     </div>
   )
