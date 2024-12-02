@@ -1,5 +1,4 @@
 import React from 'react'
-import { FaRegCircleUser } from "react-icons/fa6";
 
 function UserProfile({user}) {
 

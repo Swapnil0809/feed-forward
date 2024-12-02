@@ -131,6 +131,8 @@ export default function Signup() {
           <Input name="username" label="Username" type="text" />
           {/* Email Field */}
           <Input name="email" label="Email" type="email" />
+          {/* Phone Number Field */}
+          <Input name="phoneNo" label="Phone Number" type="text" />
           {/* Password Field */}
           <Input name="password" label="Password" type="password" />
           {/* Location Fields */}
