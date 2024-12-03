@@ -14,7 +14,7 @@ const CityAdminDashboard = () => {
   })
 
   const verifyRecipientMutation = useMutation({
-    mutationFn:() => verifyRecipient(id),
+    mutationFn:verifyRecipient,
     onSuccess:() => {
       toast.success("recipient verified successfully")
     },

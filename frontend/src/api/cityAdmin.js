@@ -7,7 +7,7 @@ export const fetchVerificationList = async () => {
 
 export const verifyRecipient = async (id) => {
   const response = await axiosInstance.patch(
-    `city-admin/verify-recipient/${id}`
+    `cityAdmin/verify-recipient/${id}`
   );
   return response.data.data;
 };

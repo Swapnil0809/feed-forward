@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {useQuery, useMutation} from '@tanstack/react-query'
 import toast from 'react-hot-toast';
 
-
 import { fetchCityAdmins, removeCityAdmin } from '../../api/admin';
 import AddCityAdmin from './AddCityAdmin';
 

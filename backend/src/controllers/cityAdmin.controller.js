@@ -78,6 +78,7 @@ const rejectRecipient = asyncHandler(async (req, res) => {
 const getFoodPosts = asyncHandler(async (req, res) => {
   const foodPosts = await FoodPost.find({
     "location.properties.city": req.user.location.properties.city,
+    status: "available",
   });
 
   console.log("Food posts fetched successfully");
@@ -90,6 +91,7 @@ const getFoodPosts = asyncHandler(async (req, res) => {
 const getFoodRequest = asyncHandler(async (req, res) => {
   const foodRequests = await FoodRequest.find({
     "location.properties.city": req.user.location.properties.city,
+    status: "unfulfilled",
   });
 
   console.log("Food requests fetched successfully");
@@ -101,4 +103,10 @@ const getFoodRequest = asyncHandler(async (req, res) => {
     );
 });
 
-export { getVerificationList, verifyRecipient,rejectRecipient, getFoodPosts, getFoodRequest };
+export {
+  getVerificationList,
+  verifyRecipient,
+  rejectRecipient,
+  getFoodPosts,
+  getFoodRequest,
+};

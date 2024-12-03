@@ -417,6 +417,7 @@ const getCityAdminDashboardStats = asyncHandler(async (city) => {
   });
   const totalRecipient = await Recipient.countDocuments({
     "location.properties.city": city,
+    isverified: true,
   });
   const totalDonations = await Donation.countDocuments({
     "location.properties.city": city,
