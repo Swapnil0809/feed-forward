@@ -1,12 +1,21 @@
-import { Admin, User } from "../models/user.model.js";
-import { CityAdmin, Donor, Recipient } from "../models/user.model.js";
-import { ApiError } from "../utils/ApiError.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
+
+import {
+  User,
+  Admin,
+  CityAdmin,
+  Donor,
+  Recipient,
+} from "../models/user.model.js";
+import { FoodPost } from "../models/foodPost.model.js";
+import { FoodRequest } from "../models/foodRequest.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 import { generateToken } from "../utils/generateToken.js";
 import { sendEmail } from "../utils/mailer.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { Donation } from "../models/donation.model.js";
 
 const donorSignUp = asyncHandler(async (req, res) => {
   const {
@@ -388,6 +397,90 @@ const getUserProfile = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, req.user, "User profile fetched successfully"));
 });
 
+const getAdminDashboardStats = asyncHandler(async () => {
+  const totalCityAdmins = await CityAdmin.countDocuments();
+  const totalDonors = await Donor.countDocuments();
+  const totalRecipients = await Recipient.countDocuments();
+  const totalDonations = await Donation.countDocuments();
+
+  return {
+    "City Admins": totalCityAdmins,
+    Donors: totalDonors,
+    Recipients: totalRecipients,
+    Donations: totalDonations,
+  };
+});
+
+const getCityAdminDashboardStats = asyncHandler(async (city) => {
+  const totalDonors = await Donor.countDocuments({
+    "location.properties.city": city,
+  });
+  const totalRecipient = await Recipient.countDocuments({
+    "location.properties.city": city,
+  });
+  const totalDonations = await Donation.countDocuments({
+    "location.properties.city": city,
+  });
+
+  return {
+    Donors: totalDonors,
+    Recipients: totalRecipient,
+    Donations: totalDonations,
+  };
+});
+
+const getDonorDashboardStats = asyncHandler(async (user) => {
+  const activeFoodPosts = await FoodPost.countDocuments({
+    postedBy: user._id,
+    status: "available",
+  });
+  const totalDonations = await Donation.countDocuments({ donorId: user._id });
+
+  return {
+    "Active Food Posts": activeFoodPosts,
+    Donations: totalDonations,
+  };
+});
+
+const getRecipientDashboardStats = asyncHandler(async (user) => {
+  const activeFoodRequests = await FoodRequest.countDocuments({
+    requestedBy: user._id,
+    status: "unfulfilled",
+  });
+  const totalDonations = await Donation.countDocuments({
+    recipientId: user._id,
+  });
+
+  return {
+    "Active Food Requests": activeFoodRequests,
+    Donations: totalDonations,
+  };
+});
+
+const getDashboardStats = asyncHandler(async (req, res) => {
+  const { role } = req.user;
+  let stats = {};
+  if (role === "Admin") {
+    stats = await getAdminDashboardStats();
+  }
+
+  if (role === "CityAdmin") {
+    stats = await getCityAdminDashboardStats(req.user.location.properties.city);
+  }
+
+  if (role === "Donor") {
+    stats = await getDonorDashboardStats(req.user);
+  }
+
+  if (role === "Recipient") {
+    stats = await getRecipientDashboardStats(req.user);
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, stats, "Stats fetched successfully"));
+});
+
 export {
   donorSignUp,
   recipientSignUp,
@@ -395,4 +488,5 @@ export {
   createCityAdmin,
   userLogout,
   getUserProfile,
+  getDashboardStats,
 };

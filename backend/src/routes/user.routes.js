@@ -6,6 +6,7 @@ import {
   userLogout,
   createCityAdmin,
   getUserProfile,
+  getDashboardStats,
 } from "../controllers/user.controller.js";
 import { verifyJWT, isAdmin } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -24,5 +25,6 @@ router
   .route("/create-city-admin")
   .post(upload.none(), verifyJWT, isAdmin, createCityAdmin);
 router.route("/get-user-profile").get(verifyJWT, getUserProfile);
+router.route("/get-dashboard-stats").get(verifyJWT, getDashboardStats);
 
 export default router;

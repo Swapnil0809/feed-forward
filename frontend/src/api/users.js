@@ -15,3 +15,8 @@ export const fetchUserProfile = async () => {
   const response = await axiosInstance.get("/users/get-user-profile");
   return response.data.data;
 };
+
+export const fetchDashboardStats = async () => {
+  const response = await axiosInstance.get(`/users/get-dashboard-stats`);
+  return response.data.data;
+};

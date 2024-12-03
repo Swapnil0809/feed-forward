@@ -3,11 +3,12 @@ import { useQuery,useMutation } from '@tanstack/react-query';
 
 import axiosInstance from '../utils/axiosInstance';
 import Header from '../components/Header';
-import AdminDashboard from "../components/AdminDashboard"
-import CityAdminDashboard from "../components/CityAdminDashboard";
-import DonorDashboard from "../components/DonorDashboard";
-import RecipientDashboard from "../components/RecipientDashboard";
 import UserProfile from '../components/dashboardComponents/UserProfile';
+import DashboardStats from '../components/dashboardComponents/DashboardStats';
+import AdminDashboard from '../components/dashboardComponents/AdminDashboard';
+import CityAdminDashboard from '../components/dashboardComponents/CityAdminDashboard';
+import DonorDashboard from '../components/dashboardComponents/DonorDashboard';
+import RecipientDashboard from '../components/dashboardComponents/RecipientDashboard';
 
 const fetchUserProfile = async () => {
     const response = await axiosInstance.get('/users/get-user-profile');
@@ -30,9 +31,10 @@ function Dashboard() {
     <div>
         <Header/>
         <main>
-          <div className='max-w-7xl mx-auto flex flex-wrap items-center gap-5 p-5 my-5 rounded-lg border-black border-[2px]'>
+          <div className='max-w-7xl mx-auto flex flex-wrap justify-center items-center gap-5 p-5 my-5 rounded-lg border-black border-[2px]'>
             <h1 className=' basis-full text-3xl font-bold text-gray-900'>{user.role} Dashboard</h1>
             <UserProfile user={user}/>
+            <DashboardStats/>
           </div>
           {user?.role === "Admin" && <AdminDashboard />}
           {user?.role === "CityAdmin" && <CityAdminDashboard />}

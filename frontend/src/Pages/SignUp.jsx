@@ -28,8 +28,6 @@ const signupSchema = z.object({
 
 export default function Signup() {
   const [userType, setUserType] = useState(null);
-  // const avatarImage = useRef(null);
-  // const [avatar, setAvatar] = useState("");
 
   const navigate = useNavigate();
 
@@ -48,14 +46,6 @@ export default function Signup() {
       console.log(error)
     },
   });
-
-  // const handleAvatarChange = (event) => {
-  //   setAvatar(event.target.files[0]);
-  // };
-
-  // const handleAvatarClick = () => {
-  //   avatarImage.current.click();
-  // };
 
   const createFormData = (data) => {
     const formData = new FormData();
@@ -106,18 +96,6 @@ export default function Signup() {
     return (
       <FormWrapper onSubmit={handleSubmit} schema={signupSchema}>
         <div className="flex justify-center mb-6">
-          {/* <div
-            className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-green-200 overflow-hidden cursor-pointer transition-all duration-300 hover:border-green-400"
-            onClick={handleAvatarClick}
-          >
-            {avatar ? (
-              <img src={URL.createObjectURL(avatar)} alt="Avatar" className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full bg-green-50 flex items-center justify-center text-green-400 text-4xl">
-                +
-              </div>
-            )}
-          </div> */}
             <FileInput
               name="avatarImage"
               label="Avatar Image"
