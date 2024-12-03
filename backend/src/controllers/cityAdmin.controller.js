@@ -1,16 +1,30 @@
-import { User } from "../models/user.model.js";
+import asyncHandler from "express-async-handler";
+
 import { CityAdmin, Donor, Recipient } from "../models/user.model.js";
 import { FoodPost } from "../models/foodPost.model.js";
 import { FoodRequest } from "../models/foodRequest.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import asyncHandler from "express-async-handler";
 import { sendEmail } from "../utils/mailer.js";
 
-const verifyRecipient = asyncHandler(async (req, res) => {
-  const { username } = req.params;
+const getVerificationList = asyncHandler(async (req, res) => {
+  const recipients = await Recipient.find({
+    "location.properties.city": req.user.location.properties.city,
+    isVerified: false,
+  }).select("-password");
+  console.log(recipients);
+  console.log("Verification list fetched successfully");
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, recipients, "Verification list fetched successfully")
+    );
+});
 
-  const recipient = await Recipient.findOne({ username });
+const verifyRecipient = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const recipient = await Recipient.findOne({ _id: id });
 
   if (!recipient) {
     throw new ApiError(400, "Recipient not found");
@@ -32,6 +46,33 @@ const verifyRecipient = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, "Recipient verified successfully"));
+});
+
+const rejectRecipient = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const recipient = await Recipient.findOne({ _id: id });
+
+  if (!recipient) {
+    throw new ApiError(400, "Recipient not found");
+  }
+
+  const mail = recipient.email;
+
+  await recipient.deleteOne();
+
+  const message = `
+  <p>
+  Your account with the username ${recipient.username} has been deleted as your account was rejected by your city admin, please contact the city admin for any queries <br/>
+  <b>City Admin</b><br/>
+  <b>Email:</b> ${req.user.email}<br/>
+  <b>Phone:</b> ${req.user.phoneNo}
+  </p>
+  `;
+
+  await sendEmail([email], "Verification Rejected", message);
+
+  console.log("Recipient rejected successfully");
 });
 
 const getFoodPosts = asyncHandler(async (req, res) => {
@@ -60,4 +101,4 @@ const getFoodRequest = asyncHandler(async (req, res) => {
     );
 });
 
-export { verifyRecipient, getFoodPosts, getFoodRequest };
+export { getVerificationList, verifyRecipient,rejectRecipient, getFoodPosts, getFoodRequest };
