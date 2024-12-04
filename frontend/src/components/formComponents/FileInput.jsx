@@ -7,9 +7,10 @@ const FileInput = ({
   multiple = false,
   previewStyle = 'profile', // 'profile' or 'post'
   rules,
+  initialFiles = [],
 }) => {
   const { register,control } = useFormContext(); // Accessing control from form context
-  const [previews, setPreviews] = useState([]);
+  const [previews, setPreviews] = useState(initialFiles? initialFiles: []);
 
   const handleFileChange = (files) => {
     const fileArray = multiple ? Array.from(files) : [files[0]];

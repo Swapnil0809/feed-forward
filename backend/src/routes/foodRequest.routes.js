@@ -11,13 +11,14 @@ import {
   isDonor,
   isRecipient,
 } from "../middlewares/auth.middleware.js";
+import { upload } from "../middlewares/multer.middleware.js";
 
 const router = Router();
 
-router.route("/add-request").post(verifyJWT, isRecipient, addFoodRequest);
+router.route("/add-request").post(upload.none(),verifyJWT, isRecipient, addFoodRequest);
 router
   .route("/update-request/:requestId")
-  .patch(verifyJWT, isRecipient, updateFoodRequest);
+  .patch(upload.none(),verifyJWT, isRecipient, updateFoodRequest);
 router
   .route("/delete-request/:requestId")
   .delete(verifyJWT, isRecipient, deleteFoodRequest);

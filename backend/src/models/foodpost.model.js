@@ -23,20 +23,28 @@ const foodPostSchema = new Schema(
     quantity: {
       type: Number,
     },
+    quantityUnit: {
+      type: String,
+      enum: ["kg", "unit", "litre", "packet", "box", "other"],
+      required: true,
+    },
     foodType: {
       type: String,
       enum: ["veg", "non-veg"],
     },
-    expiryDate: {
+    bestBefore: {
       type: Date,
-    },
-    pickupDate: {
-      type: Date,
+      validate: {
+        validator: function (value) {
+          return value > Date.now(); // Expiry date must be in the future
+        },
+        message: "Expiry date must be in the future.",
+      },
     },
     location: locationSchema,
     status: {
       type: String,
-      enum: ["available", "claimed", "expired"],
+      enum: ["available", "claimed", "expired", "donated"],
     },
   },
   { timestamps: true }

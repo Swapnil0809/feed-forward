@@ -17,14 +17,28 @@ const foodRequestSchema = new Schema({
   quantity: {
     type: Number,
   },
+  quantityUnit: {
+    type: String,
+    enum: ["kg", "unit", "litre", "packet", "box", "other"],
+    required: true,
+  },
   foodType: {
     type: String,
     enum: ["veg", "non-veg", "both"],
   },
+  requiredBy: {
+    type: Date,
+    validate: {
+      validator: function (value) {
+        return value >= Date.now();
+      },
+      message: "The requiredBy date must not be in the past.",
+    },
+  },
   location: locationSchema,
   status: {
     type: String,
-    enum: ["unfulfilled", "fulfilled"],
+    enum: ["unfulfilled", "in-progress", "fulfilled"],
   },
 });
 

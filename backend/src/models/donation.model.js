@@ -2,13 +2,12 @@ import mongoose, { Schema } from "mongoose";
 
 const donationSchema = new Schema(
   {
-    foodPostId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "FoodPost",
+    donationFrom: {
+      type: String,
+      enum: ["FoodPost", "FoodRequest"],
     },
-    foodRequestId: {
+    referenceId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "FoodRequest",
     },
     donorId: {
       type: mongoose.Schema.Types.ObjectId,

@@ -4,10 +4,11 @@ import asyncHandler from "express-async-handler";
 import { FoodRequest } from "../models/foodRequest.model.js";
 
 const addFoodRequest = asyncHandler(async (req, res) => {
-  const { title, description, quantity, foodType } = req.body;
+  const { title, description, quantity, quantityUnit, foodType, requiredBy } =
+    req.body;
 
   if (
-    [title, description, quantity, foodType].some(
+    [title, description, quantity, quantityUnit, foodType, requiredBy].some(
       (field) => !field || (typeof field === "string" && field.trim() === "")
     )
   ) {
@@ -19,7 +20,9 @@ const addFoodRequest = asyncHandler(async (req, res) => {
     title,
     description,
     quantity,
+    quantityUnit,
     foodType,
+    requiredBy: new Date(requiredBy),
     location: req.user.location,
     status: "unfulfilled",
   });
@@ -37,7 +40,7 @@ const addFoodRequest = asyncHandler(async (req, res) => {
 
 const updateFoodRequest = asyncHandler(async (req, res) => {
   const { requestId } = req.params;
-  const { title, description, quantity, foodType } = req.body;
+  const { title, description, quantity, foodType, requiredBy } = req.body;
 
   const foodRequest = await FoodRequest.findById(requestId);
 
@@ -54,7 +57,11 @@ const updateFoodRequest = asyncHandler(async (req, res) => {
   foodRequest.title = title || foodRequest.title;
   foodRequest.description = description || foodRequest.description;
   foodRequest.quantity = quantity || foodRequest.quantity;
+  foodRequest.quantityUnit = quantityUnit || foodRequest.quantityUnit;
   foodRequest.foodType = foodType || foodRequest.foodType;
+  foodRequest.requiredBy = requiredBy
+    ? new Date(requiredBy)
+    : foodRequest.requiredBy;
 
   await foodRequest.save();
 

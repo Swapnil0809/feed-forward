@@ -13,9 +13,9 @@ const addFoodPost = asyncHandler(async (req, res) => {
     title,
     description,
     quantity,
+    quantityUnit,
     foodType,
-    expiryDate,
-    pickupDate,
+    bestBefore,
     useUserLocation,
     coordinates,
     address,
@@ -25,7 +25,7 @@ const addFoodPost = asyncHandler(async (req, res) => {
   } = req.body;
 
   if (
-    [title, description, quantity, foodType, expiryDate, pickupDate].some(
+    [title, description, quantity, quantityUnit, foodType, bestBefore].some(
       (field) => !field || (typeof field === "string" && field.trim() === "")
     )
   ) {
@@ -71,9 +71,9 @@ const addFoodPost = asyncHandler(async (req, res) => {
     description,
     images: imageUrls,
     quantity,
+    quantityUnit,
     foodType,
-    expiryDate: new Date(expiryDate),
-    pickupDate: new Date(pickupDate),
+    bestBefore: new Date(bestBefore),
     location,
     status: "available",
   });
@@ -95,9 +95,9 @@ const updateFoodPost = asyncHandler(async (req, res) => {
     title,
     description,
     quantity,
+    quantityUnit,
     foodType,
-    expiryDate,
-    pickupDate,
+    bestBefore,
     useUserLocation,
     coordinates,
     address,
@@ -161,9 +161,9 @@ const updateFoodPost = asyncHandler(async (req, res) => {
   foodPost.title = title || foodPost.title;
   foodPost.description = description || foodPost.description;
   foodPost.quantity = quantity || foodPost.quantity;
+  foodPost.quantityUnit = quantityUnit || foodPost.quantityUnit;
   foodPost.foodType = foodType || foodPost.foodType;
-  foodPost.expiryDate = expiryDate ? new Date(expiryDate) : foodPost.expiryDate;
-  foodPost.pickupDate = pickupDate ? new Date(pickupDate) : foodPost.pickupDate;
+  foodPost.bestBefore = bestBefore ? new Date(bestBefore) : foodPost.bestBefore;
   foodPost.location = location;
 
   // save the updated food post
