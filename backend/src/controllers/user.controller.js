@@ -74,13 +74,13 @@ const donorSignUp = asyncHandler(async (req, res) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // convert coordinates into number
-  const [lon, lat] = coordinates.split(",").map(Number);
+  // convert coordinates into array of numbers
+  const coordinatesArray = coordinates.map(Number);
 
   // construct location object
   const location = {
     type: "Point",
-    coordinates: [lon, lat],
+    coordinates: coordinatesArray,
     properties: {
       address,
       state: state.toLowerCase(),
@@ -171,13 +171,13 @@ const recipientSignUp = asyncHandler(async (req, res) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // convert coordinates into number
-  const [lon, lat] = coordinates.split(",").map(Number);
+  // convert coordinates into array of numbera
+  const coordinatesArray = coordinates.map(Number);
 
   // construct location object
   const location = {
     type: "Point",
-    coordinates: [lon, lat],
+    coordinates: coordinatesArray,
     properties: {
       address,
       state: state.toLowerCase(),
@@ -323,13 +323,13 @@ const createCityAdmin = asyncHandler(async (req, res) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // convert coordinates into number
-  const [lon, lat] = coordinates.split(",").map(Number);
+  // convert coordinates into array of numbers
+  const coordinatesArray = coordinates.map(Number);
 
   // construct location object
   const location = {
     type: "Point",
-    coordinates: [lon, lat],
+    coordinates: coordinatesArray,
     properties: {
       address,
       state: state.toLowerCase(),

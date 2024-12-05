@@ -8,13 +8,14 @@ import FormWrapper from '../components/formComponents/FormWrapper';
 import FileInput from '../components/formComponents/FileInput';
 import Input from '../components/formComponents/Input';
 import Select from '../components/formComponents/Select';
+import { useFetchCoordinates } from '../hooks/useFetchCoordinates';
 import { submitSignup } from '../api/users';
-import { fetchCoordinates } from '../api/fetchCoordinates';
 
 // Validation Schema with zod
 const signupSchema = z.object({
   username: z.string().nonempty("Username is required"),
   email: z.string().email("Invalid email address"),
+  phoneNo: z.string().nonempty("Phone number is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   avatarImage: z.instanceof(File).optional(),
   address: z.string().nonempty("Address is required"),
@@ -31,10 +32,7 @@ export default function Signup() {
 
   const navigate = useNavigate();
 
-  const fetchCoordinatesMutation = useMutation({
-    mutationFn: (pincode) => fetchCoordinates(pincode)
-  });
-
+  const { mutateAsync:fetchCoordinates } = useFetchCoordinates();
   const submitSignupMutation = useMutation({
     mutationFn: submitSignup,
     onSuccess: (data) => {
@@ -58,7 +56,7 @@ export default function Signup() {
   const handleSubmit = async (data) => {
     try {
       console.log(data)
-      const coordinates = await fetchCoordinatesMutation.mutateAsync(data.pincode);
+      const coordinates = await fetchCoordinates(data.pincode);
       data.coordinates = coordinates;
       const formData = createFormData(data);
       const apiUrl = `/users/${userType}-signup`;

@@ -56,8 +56,8 @@ const DonorDashboard = () => {
                   <div>
                     {
                       post.images.length > 0 && (
-                        post.images.map((image) => (
-                          <img key={post._id} src={image} alt="image" />
+                        post.images.map((image,index) => (
+                          <img key={index} src={image} alt="image" />
                         ))
                       )
                     }

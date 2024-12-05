@@ -2,7 +2,6 @@ import axiosInstance from "../utils/axiosInstance";
 
 export const fetchDonorFoodPosts = async () => {
   const response = await axiosInstance.get("/foodPost/get-donor-posts");
-  console.log(response.data.data);
   return response.data.data;
 };
 
@@ -18,10 +17,10 @@ export const deletePost = async (id) => {
   return response.data.data;
 };
 
-export const updatePost = async (id, formdata) => {
+export const updatePost = async ({ id, formData }) => {
   const response = await axiosInstance.patch(
     `/foodPost/update-post/${id}`,
-    formdata,
+    formData,
     {
       headers: { "Content-Type": "multipart/form-data" },
     }

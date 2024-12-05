@@ -8,27 +8,42 @@ import FormWrapper from '../formComponents/FormWrapper'
 import FileInput from '../formComponents/FileInput'
 import Input from '../formComponents/Input'
 import Select from '../formComponents/Select'
+import Checkbox from '../formComponents/CheckBox';
+import { useFetchCoordinates } from '../../hooks/useFetchCoordinates';
 import { createFormData } from '../../utils/createFormData';
 import { addPost, updatePost } from '../../api/foodPosts';
 
-const addPostSchema = z.object({
-  images:z.instanceof(FileList).optional(),
+const postSchema = z.object({
+  images:z.array(z.union([z.instanceof(File), z.string()]))
+  .optional(),
   title: z.string().nonempty("Title is required"),
   description: z.string().nonempty("Description is required"),
-  quantity: z.string().nonempty("Quantity is required"),
+  quantity: z.preprocess(
+    (val) => (typeof val === "string" ? parseFloat(val) : val),
+    z.number().min(1, "Quantity must be at least 1")
+  ),
+  quantityUnit: z.string().nonempty("Quantity unit is required"),
   foodType: z.string().nonempty("Food Type is required"),
-  expiryDate: z.string().nonempty("Expiry Date is required"),
-  pickUpDate: z.string().nonempty("Pickup Date is required"),
+  bestBefore:z.preprocess((arg) => {
+    // Ensure the date is parsed correctly
+    return typeof arg === "string" ? new Date(arg) : arg;
+  }, z.date().min(new Date(), "Best Before must be in the future")),
+  useUserLocation: z.boolean().default(false),
+  address: z.string().optional(),
+  pincode: z.string().optional(),
 });
 
 
 function FoodPost({setIsOpen,post}) {
   const isEditMode = !!post;
 
+  const {mutateAsync:fetchCoordinates} = useFetchCoordinates();
+
   const addPostMutation = useMutation({
     mutationFn:addPost,
     onSuccess:() => {
       toast.success("Post added successfully")
+      setIsOpen(false)
     },
     onError:(error) => {
       console.log(error)
@@ -39,16 +54,25 @@ function FoodPost({setIsOpen,post}) {
     mutationFn:updatePost,
     onSuccess:() => {
       toast.success("Post updated successfully")
+      setIsOpen(false)
     },
     onError:(error) => {
       console.log(error)
     }
   })
 
-  const handleSubmit = (data) => {
+  const handleSubmit =async (data) => {
+    console.log(data)
+    if(!data.useUserLocation){
+      const coordinates = await fetchCoordinates(data.pincode);
+      data.coordinates = coordinates;
+    }
     const formData = createFormData(data);
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}:`, value);
+  }
     if(isEditMode){
-      editPostMutation.mutate(post._id,formData);
+      editPostMutation.mutate({ id: post._id, formData });
     } else {
       addPostMutation.mutate(formData);
     }
@@ -67,7 +91,7 @@ function FoodPost({setIsOpen,post}) {
             <div>
               <FormWrapper
                 onSubmit={handleSubmit}
-                schema={addPostSchema}
+                schema={postSchema}
                 defaultValues={post || {}}
               >
                 <div>
@@ -82,7 +106,7 @@ function FoodPost({setIsOpen,post}) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <Input name="title" label="Title"/>
                     <Input name="description" label="Description"/>
-                    <Input name="quantity" label="Quantity"/>
+                    <Input name="quantity" label="Quantity" type="number"/>
                     <Select name="quantityUnit" label="Quantity Unit" 
                       options={[
                         { value: "kg", label: "kg" },
@@ -95,8 +119,11 @@ function FoodPost({setIsOpen,post}) {
                     />
                     <Select name="foodType" label="Food Type" options={[{ value: "veg", label: "Veg" },
                 { value: "non-veg", label: "Non-veg" },]}/>
-                    <Input name="bestBefore" label="Best Before"/>
-                    <Input name="pickUpDate" label="Pickup Date"/>
+                    <Input name="bestBefore" label="Best Before" type='date'/>
+                    <Checkbox name="useUserLocation" label="Use your location" defaultValue={false}/>
+                    {/* <Input name="useUserLocation" label="Use your location" type='checkbox'/>  */}
+                    <Input name="address" label="Address"/>
+                    <Input name="pincode" label="Pincode"/>
                 </div>
                 <button
                   type="submit"

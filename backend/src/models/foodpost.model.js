@@ -25,7 +25,7 @@ const foodPostSchema = new Schema(
     },
     quantityUnit: {
       type: String,
-      enum: ["kg", "unit", "litre", "packet", "box", "other"],
+      enum: ["kg", "units", "litre", "packet", "box", "other"],
       required: true,
     },
     foodType: {

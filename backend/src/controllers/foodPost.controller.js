@@ -19,8 +19,6 @@ const addFoodPost = asyncHandler(async (req, res) => {
     useUserLocation,
     coordinates,
     address,
-    state,
-    city,
     pincode,
   } = req.body;
 
@@ -46,20 +44,19 @@ const addFoodPost = asyncHandler(async (req, res) => {
   let location;
   if (useUserLocation === "true") {
     location = req.user.location;
-    console.log("user location", req.user.location);
-    console.log("copied location", location);
   } else {
-    // convert coordinates into number
-    const [lon, lat] = coordinates.split(",").map(Number);
+    // convert coordinates into array of numbers
+    const coordinatesArray = coordinates.map(Number);
+
 
     // construct location object
     location = {
       type: "Point",
-      coordinates: [lon, lat],
+      coordinates: coordinatesArray,
       properties: {
         address,
-        state,
-        city,
+        state:req.user.location.properties.state,
+        city:req.user.location.properties.city,
         pincode,
       },
     };
@@ -142,12 +139,10 @@ const updateFoodPost = asyncHandler(async (req, res) => {
   if (useUserLocation === "true") {
     location = req.user.location;
   } else {
-    const [lon, lat] = coordinates?.split(",").map(Number);
-    console.log([lon, lat] || foodPost.location.coordinates);
-    console.log(address || foodPost.location.properties.address);
+    const coordinatesArray = coordinates.map(Number);
     location = {
       type: "Point",
-      coordinates: [lon, lat] || foodPost.location.coordinates,
+      coordinates:coordinatesArray || foodPost.location.coordinates,
       properties: {
         address: address || foodPost.location.properties.address,
         state: state || foodPost.location.properties.state,
