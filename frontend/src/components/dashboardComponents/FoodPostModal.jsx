@@ -34,7 +34,7 @@ const postSchema = z.object({
 });
 
 
-function FoodPost({setIsOpen,post}) {
+function FoodPostModal({setIsOpen,post}) {
   const isEditMode = !!post;
 
   const {mutateAsync:fetchCoordinates} = useFetchCoordinates();
@@ -78,7 +78,7 @@ function FoodPost({setIsOpen,post}) {
     }
   }
   return (
-    <div className=" w-full h-full absolute top-0 bg-gray-400/80 flex justify-center items-center">
+    <div className=" w-full h-full absolute top-0 left-0 bg-gray-400/80 flex justify-center items-center">
         <div className=" w-[60%] flex flex-wrap justify-center p-8 rounded-lg bg-white">
             <div className="basis-full flex justify-end">
                 <button
@@ -137,4 +137,4 @@ function FoodPost({setIsOpen,post}) {
   )
 }
 
-export default FoodPost
+export default FoodPostModal
