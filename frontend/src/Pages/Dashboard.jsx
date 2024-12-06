@@ -28,12 +28,12 @@ function Dashboard() {
 
 
   return (
-    <div>
+    <div className='bg-gradient-to-r from-green-100 via-teal-100 to-blue-100 pt-20'>
         <Header/>
         <main>
-          <div className='max-w-7xl mx-auto flex flex-wrap justify-center items-center gap-5 p-5 my-5 rounded-lg border-black border-[2px]'>
-            <h1 className=' basis-full text-3xl font-bold text-gray-900'>{user.role} Dashboard</h1>
-            <UserProfile user={user}/>
+        <div className='max-w-7xl mx-auto flex flex-wrap justify-center items-center gap-5 p-5 my-5 rounded-lg  bg-white '>
+        <h1 className=' basis-full text-3xl font-bold text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-teal-500 to-blue-600'>{user.role} Dashboard</h1>
+        <UserProfile user={user}/>
             <DashboardStats/>
           </div>
           {user?.role === "Admin" && <AdminDashboard />}
@@ -41,8 +41,8 @@ function Dashboard() {
           {user?.role === "Donor" && <DonorDashboard />}
           {user?.role === "Recipient" && <RecipientDashboard />}
         </main>
-    </div>
-  )
-}
+        </div>
+        )
+        }
 
 export default Dashboard
