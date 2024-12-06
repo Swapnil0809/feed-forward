@@ -15,8 +15,8 @@ const addFoodRequest = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields are required.");
   }
 
-  const postRequest = await FoodRequest.create({
-    postedBy: req.user._id,
+  const foodRequest = await FoodRequest.create({
+    requestedBy: req.user._id,
     title,
     description,
     quantity,
@@ -27,7 +27,7 @@ const addFoodRequest = asyncHandler(async (req, res) => {
     status: "unfulfilled",
   });
 
-  if (!postRequest) {
+  if (!foodRequest) {
     throw new ApiError(500, "Something went wrong while adding request");
   }
 
@@ -35,12 +35,13 @@ const addFoodRequest = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, postRequest, "Food request added successfully"));
+    .json(new ApiResponse(200, foodRequest, "Food request added successfully"));
 });
 
 const updateFoodRequest = asyncHandler(async (req, res) => {
   const { requestId } = req.params;
-  const { title, description, quantity, foodType, requiredBy } = req.body;
+  const { title, description, quantity, quantityUnit, foodType, requiredBy } =
+    req.body;
 
   const foodRequest = await FoodRequest.findById(requestId);
 
@@ -50,7 +51,7 @@ const updateFoodRequest = asyncHandler(async (req, res) => {
   }
 
   // check if user is authorized to update food request
-  if (!foodRequest.postedBy.equals(req.user._id)) {
+  if (!foodRequest.requestedBy.equals(req.user._id)) {
     throw new ApiError(403, "Unauthorized access to update food request");
   }
 

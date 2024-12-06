@@ -1,5 +1,10 @@
 import axiosInstance from "../utils/axiosInstance";
 
+export const fetchFoodPosts = async () => {
+  const response = await axiosInstance.get("/foodPost/get-available-posts");
+  return response.data.data;
+};
+
 export const fetchDonorFoodPosts = async () => {
   const response = await axiosInstance.get("/foodPost/get-donor-posts");
   return response.data.data;

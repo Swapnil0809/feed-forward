@@ -121,7 +121,6 @@ function FoodPost({setIsOpen,post}) {
                 { value: "non-veg", label: "Non-veg" },]}/>
                     <Input name="bestBefore" label="Best Before" type='date'/>
                     <Checkbox name="useUserLocation" label="Use your location" defaultValue={false}/>
-                    {/* <Input name="useUserLocation" label="Use your location" type='checkbox'/>  */}
                     <Input name="address" label="Address"/>
                     <Input name="pincode" label="Pincode"/>
                 </div>
