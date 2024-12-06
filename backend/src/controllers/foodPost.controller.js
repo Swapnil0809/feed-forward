@@ -1,12 +1,15 @@
+import asyncHandler from "express-async-handler";
+
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import asyncHandler from "express-async-handler";
 import { sendEmail } from "../utils/mailer.js";
 import {
   uploadOnCloudinary,
   deleteFromCloudinary,
 } from "../utils/cloudinary.js";
 import { FoodPost } from "../models/foodPost.model.js";
+import { PostRequest } from "../models/postRequest.model.js";
+import { Donation } from "../models/donation.model.js";
 
 const addFoodPost = asyncHandler(async (req, res) => {
   const {
@@ -48,15 +51,14 @@ const addFoodPost = asyncHandler(async (req, res) => {
     // convert coordinates into array of numbers
     const coordinatesArray = coordinates.map(Number);
 
-
     // construct location object
     location = {
       type: "Point",
       coordinates: coordinatesArray,
       properties: {
         address,
-        state:req.user.location.properties.state,
-        city:req.user.location.properties.city,
+        state: req.user.location.properties.state,
+        city: req.user.location.properties.city,
         pincode,
       },
     };
@@ -142,7 +144,7 @@ const updateFoodPost = asyncHandler(async (req, res) => {
     const coordinatesArray = coordinates.map(Number);
     location = {
       type: "Point",
-      coordinates:coordinatesArray || foodPost.location.coordinates,
+      coordinates: coordinatesArray || foodPost.location.coordinates,
       properties: {
         address: address || foodPost.location.properties.address,
         state: state || foodPost.location.properties.state,
@@ -251,10 +253,74 @@ const getAvailableFoodPosts = asyncHandler(async (req, res) => {
     );
 });
 
+const addPostRequest = asyncHandler(async (req, res) => {
+  const { postId } = req.params;
+
+  const foodPost = await FoodPost.findById(postId);
+
+  // check if food post exists
+  if (!foodPost) {
+    throw new ApiError(404, "Food post not found");
+  }
+
+  // check if this is the first request
+  const existingPostRequest = await PostRequest.findOne({
+    postId: foodPost._id,
+  });
+
+  const status = existingPostRequest ? "rejected" : "approved";
+
+  const postRequest = await PostRequest.create({
+    requestedBy: req.user._id,
+    postId: foodPost._id,
+    status,
+  });
+
+  if (!postRequest) {
+    throw new ApiError(500, "Something went wrong while adding post request");
+  }
+
+  console.log("Post request added successfully");
+
+  if (status === "approved") {
+    // check if it is already donated
+    const existingDonation = await Donation.findOne({
+      referenceId: foodPost._id,
+    });
+
+    if (existingDonation) {
+      throw new ApiError(400, "Food post is already donated");
+    }
+
+    const donation = await Donation.create({
+      donationFrom: "FoodPost",
+      referenceId: foodPost._id,
+      donorId: foodPost.postedBy,
+      recipientId: req.user._id,
+      status: "in-progress",
+    });
+
+    if (!donation) {
+      throw new ApiError(500, "Something went wrong while adding donation");
+    }
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        status,
+        "Post request added successfully"
+      )
+    );
+});
+
 export {
   addFoodPost,
   updateFoodPost,
   deleteFoodPost,
   getDonorFoodPosts,
   getAvailableFoodPosts,
+  addPostRequest
 };

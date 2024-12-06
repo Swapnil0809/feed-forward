@@ -5,6 +5,7 @@ import {
   deleteFoodPost,
   getDonorFoodPosts,
   getAvailableFoodPosts,
+  addPostRequest,
 } from "../controllers/foodPost.controller.js";
 import {
   verifyJWT,
@@ -31,5 +32,9 @@ router.route("/get-donor-posts").get(verifyJWT, isDonor, getDonorFoodPosts);
 router
   .route("/get-available-posts")
   .get(verifyJWT, isRecipient, getAvailableFoodPosts);
+
+router
+  .route("/add-request/:postId")
+  .post(verifyJWT, isRecipient, addPostRequest);
 
 export default router;
