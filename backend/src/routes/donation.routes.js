@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { updateDonationStatus } from "../controllers/donation.controller";
+import { updateDonationStatus } from "../controllers/donation.controller.js";
 import {
   verifyJWT,
   isDonor,

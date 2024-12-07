@@ -21,7 +21,7 @@ const FoodRequest = ({ foodRequests, userRole }) => {
   return (
     <>
       <div className="w-[50%] max-h-[90%] p-5 flex flex-col gap-5 rounded-lg border-black border-[2px]">
-        <h1 className=" text-2xl font-bold text-gray-900">Food Posts</h1>
+        <h1 className=" text-2xl font-bold text-gray-900">Food Requests</h1>
         {userRole === "Recipient" && (
           <button
             className="w-[8em] p-2 rounded-lg bg-green-500 text-white"

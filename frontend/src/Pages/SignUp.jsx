@@ -9,6 +9,7 @@ import FileInput from '../components/formComponents/FileInput';
 import Input from '../components/formComponents/Input';
 import Select from '../components/formComponents/Select';
 import { useFetchCoordinates } from '../hooks/useFetchCoordinates';
+import { createFormData } from '../utils/createFormData';
 import { submitSignup } from '../api/users';
 
 // Validation Schema with zod
@@ -17,7 +18,7 @@ const signupSchema = z.object({
   email: z.string().email("Invalid email address"),
   phoneNo: z.string().nonempty("Phone number is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  avatarImage: z.instanceof(File).optional(),
+  avatarImage:z.union([z.instanceof(File), z.string()]).optional(),
   address: z.string().nonempty("Address is required"),
   city: z.string().nonempty("City is required"),
   state: z.string().nonempty("State is required"),
@@ -44,14 +45,6 @@ export default function Signup() {
       console.log(error)
     },
   });
-
-  const createFormData = (data) => {
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      if (value !== undefined) formData.append(key, value);
-    });
-    return formData;
-  };
 
   const handleSubmit = async (data) => {
     try {
