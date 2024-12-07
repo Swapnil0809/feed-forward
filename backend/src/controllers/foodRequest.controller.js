@@ -2,6 +2,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "express-async-handler";
 import { FoodRequest } from "../models/foodRequest.model.js";
+import { Donation } from "../models/donation.model.js";
 
 const addFoodRequest = asyncHandler(async (req, res) => {
   const { title, description, quantity, quantityUnit, foodType, requiredBy } =
@@ -127,10 +128,62 @@ const getFoodRequests = asyncHandler(async (req, res) => {
     );
 });
 
+const fulfillFoodRequest = asyncHandler(async (req, res) => {
+  const { requestId } = req.params;
+
+  const foodRequest = await FoodRequest.findById(requestId);
+
+  // check if food request exists
+  if (!foodRequest) {
+    throw new ApiError(404, "Food request not found");
+  }
+
+  // check if request is already fulfilled
+  if (foodRequest.status === "fulfilled") {
+    throw new ApiError(400, "Request already fulfilled");
+  }
+
+  // check if donation is added already
+  const existingDonation = await Donation.findOne({
+    donationFrom: "FoodRequest",
+    referenceId: foodRequest._id,
+  });
+
+  if (existingDonation) {
+    throw new ApiError(400, "Already donated");
+  }
+
+  if (!donation) {
+    throw new ApiError(500, "Something went wrong while adding donation");
+  }
+
+  const donation = await Donation.create({
+    donationFrom: "FoodRequest",
+    referenceId: foodRequest._id,
+    donorId: req.user._id,
+    recipientId: foodRequest.requestedBy,
+    status: "in-progress",
+  });
+
+  if (!donation) {
+    throw new ApiError(500, "Something went wrong while adding donation");
+  }
+
+  foodRequest.status = "in-progress";
+  await foodRequest.save();
+
+  console.log("Your donation is now in progress");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, donation, "Your donation is now in progress"));
+});
+
 export {
   addFoodRequest,
   updateFoodRequest,
   deleteFoodRequest,
   getRecipientFoodRequests,
   getFoodRequests,
+  fulfillFoodRequest,
 };

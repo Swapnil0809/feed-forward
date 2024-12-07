@@ -253,65 +253,48 @@ const getAvailableFoodPosts = asyncHandler(async (req, res) => {
     );
 });
 
-const addPostRequest = asyncHandler(async (req, res) => {
-  const { postId } = req.params;
+const requestFood = asyncHandler(async (req, res) => {
+  const { foodId } = req.params;
 
   const foodPost = await FoodPost.findById(postId);
-
+  
   // check if food post exists
   if (!foodPost) {
     throw new ApiError(404, "Food post not found");
   }
 
-  // check if this is the first request
-  const existingPostRequest = await PostRequest.findOne({
-    postId: foodPost._id,
+  const existingDonation = await Donation.findOne({
+    donationFrom: "FoodPost",
+    referenceId: foodPost._id,
   });
 
-  const status = existingPostRequest ? "rejected" : "approved";
+  if (existingDonation) {
+    throw new ApiError(400, "Already donated");
+  }
 
-  const postRequest = await PostRequest.create({
-    requestedBy: req.user._id,
-    postId: foodPost._id,
-    status,
+  const donation = await Donation.create({
+    donationFrom: "FoodPost",
+    referenceId: foodPost._id,
+    donorId: foodPost.postedBy,
+    recipientId: req.user._id,
+    status: "in-progress",
   });
 
-  if (!postRequest) {
-    throw new ApiError(500, "Something went wrong while adding post request");
+  if (!donation) {
+    throw new ApiError(500, "Something went wrong while adding donation");
   }
 
-  console.log("Post request added successfully");
-
-  if (status === "approved") {
-    // check if it is already donated
-    const existingDonation = await Donation.findOne({
-      referenceId: foodPost._id,
-    });
-
-    if (existingDonation) {
-      throw new ApiError(400, "Food post is already donated");
-    }
-
-    const donation = await Donation.create({
-      donationFrom: "FoodPost",
-      referenceId: foodPost._id,
-      donorId: foodPost.postedBy,
-      recipientId: req.user._id,
-      status: "in-progress",
-    });
-
-    if (!donation) {
-      throw new ApiError(500, "Something went wrong while adding donation");
-    }
-  }
+  console.log(
+    "Your request has been approved, now the donation is in progress"
+  );
 
   return res
     .status(200)
     .json(
       new ApiResponse(
         200,
-        status,
-        "Post request added successfully"
+        donation,
+        "Your request has been approved, now the donation is in progress"
       )
     );
 });
@@ -322,5 +305,5 @@ export {
   deleteFoodPost,
   getDonorFoodPosts,
   getAvailableFoodPosts,
-  addPostRequest
+  requestFood
 };
