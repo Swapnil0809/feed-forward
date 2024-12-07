@@ -13,12 +13,21 @@ import { createFormData } from '../utils/createFormData';
 import { submitSignup } from '../api/users';
 
 // Validation Schema with zod
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const signupSchema = z.object({
   username: z.string().nonempty("Username is required"),
   email: z.string().email("Invalid email address"),
   phoneNo: z.string().nonempty("Phone number is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  avatarImage:z.union([z.instanceof(File), z.string()]).optional(),
+  avatarImage:z.any().optional()
+  .refine(
+    (file) => {
+      console.log(file)
+      if (!file || file.length === 0) return true;
+      return ACCEPTED_IMAGE_TYPES.includes(file.type);
+    },
+    { message: "Invalid file. Please choose a JPEG, PNG, or WebP image." }
+  ),
   address: z.string().nonempty("Address is required"),
   city: z.string().nonempty("City is required"),
   state: z.string().nonempty("State is required"),
@@ -26,7 +35,7 @@ const signupSchema = z.object({
   donorType: z.string().optional(),
   organizationType: z.string().optional(),
   registrationNo: z.string().optional()
-});
+})
 
 export default function Signup() {
   const [userType, setUserType] = useState(null);

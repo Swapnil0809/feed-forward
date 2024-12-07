@@ -13,9 +13,16 @@ import { useFetchCoordinates } from '../../hooks/useFetchCoordinates';
 import { createFormData } from '../../utils/createFormData';
 import { addPost, updatePost } from '../../api/foodPosts';
 
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const postSchema = z.object({
-  images:z.array(z.union([z.instanceof(File), z.string()]))
-  .optional(),
+  images:z.any().optional()
+    .refine(
+      (files) => {
+        if (!files || files.length === 0) return true;
+        return files.every((file) => ACCEPTED_IMAGE_TYPES.includes(file.type));
+      },
+      { message: "Invalid file(s). Please choose JPEG, PNG, or WebP images only." }
+    ),
   title: z.string().nonempty("Title is required"),
   description: z.string().nonempty("Description is required"),
   quantity: z.preprocess(
