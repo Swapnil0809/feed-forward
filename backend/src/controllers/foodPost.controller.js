@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 
 import { FoodPost } from "../models/foodPost.model.js";
+import { Recipient } from "../models/user.model.js";
 import { Donation } from "../models/donation.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -80,6 +81,28 @@ const addFoodPost = asyncHandler(async (req, res) => {
   }
 
   console.log("Food post added successfully");
+
+  const recipients = await Recipient.find(
+    {
+      "location.properties.city": foodPost.location.properties.city,
+    },
+    { _id: 0, role: 0, email: 1 }
+  );
+
+  const recipientsEmails = recipients.map((recipient) => recipient.email);
+
+  const message = `
+    <p>New Food Post is available on our FeedForward Platform <br/>
+    The post details are: <br/>
+    <b>Title</b>:${foodPost.title}<br/>
+    <b>Description</b>:${foodPost.description}<br/>
+    <b>Quantiy</b>:${foodPost.quantity} ${foodPost.quantityUnit}<br/>
+    <b>Food Type type</b>:${foodPost.foodType}<br/>
+    <b>Best Before</b>:${foodPost.bestBefore}<br/>
+    </p>
+  `;
+
+  await sendEmail(recipientsEmails, "New Food Post Available", message);
 
   return res
     .status(200)

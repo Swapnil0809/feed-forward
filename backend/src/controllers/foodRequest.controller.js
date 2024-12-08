@@ -1,8 +1,10 @@
+import asyncHandler from "express-async-handler";
+
+import { FoodRequest } from "../models/foodRequest.model.js";
+import { Donor } from "../models/user.model.js";
+import { Donation } from "../models/donation.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import asyncHandler from "express-async-handler";
-import { FoodRequest } from "../models/foodRequest.model.js";
-import { Donation } from "../models/donation.model.js";
 
 const addFoodRequest = asyncHandler(async (req, res) => {
   const { title, description, quantity, quantityUnit, foodType, requiredBy } =
@@ -33,6 +35,28 @@ const addFoodRequest = asyncHandler(async (req, res) => {
   }
 
   console.log("Food request added successfully");
+
+  const donors = await Donor.find(
+    {
+      "location.properties.city": foodRequest.location.properties.city,
+    },
+    { _id: 0, role: 0, email: 1 }
+  );
+
+  const donorsEmails = donors.map((donor) => donor.email);
+
+  const message = `
+    <p>${req.user.username} are requesting for food!<br/>
+    The request details are: <br/>
+    <b>Title</b>:${foodRequest.title}<br/>
+    <b>Description</b>:${foodRequest.description}<br/>
+    <b>Quantiy</b>:${foodRequest.quantity} ${foodRequest.quantityUnit}<br/>
+    <b>Food Type type</b>:${foodRequest.foodType}<br/>
+    <b>Required By</b>:${foodRequest.requiredBy}<br/>
+    </p>
+  `;
+
+  await sendEmail(donorsEmails, "New Food Post Available", message);
 
   return res
     .status(200)
