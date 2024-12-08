@@ -1,5 +1,6 @@
 import asyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 import {
   User,
@@ -10,13 +11,31 @@ import {
 } from "../models/user.model.js";
 import { FoodPost } from "../models/foodPost.model.js";
 import { FoodRequest } from "../models/foodRequest.model.js";
+import { Donation } from "../models/donation.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { generateToken } from "../utils/generateToken.js";
+import { validateRequiredFields } from "../utils/validateRequiredFields.js";
+import { createLocationObject } from "../utils/createLocationObject.js";
 import { sendEmail } from "../utils/mailer.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { Donation } from "../models/donation.model.js";
 
+// helper functions
+const generateToken = (id, role) => {
+  return jwt.sign({ id, role }, process.env.TOKEN_SECRET, { expiresIn: "3d" });
+};
+
+const getCityAdmin = asyncHandler(async (city) => {
+  const cityAdmin = await CityAdmin.find(
+    {
+      "location.properties.city": city,
+    },
+    { _id: 0, role: 0, email: 1 }
+  );
+
+  return cityAdmin;
+});
+
+// main controllers
 const donorSignUp = asyncHandler(async (req, res) => {
   const {
     username,
@@ -31,24 +50,18 @@ const donorSignUp = asyncHandler(async (req, res) => {
     donorType,
   } = req.body;
 
-  if (
-    [
-      username,
-      email,
-      phoneNo,
-      password,
-      coordinates,
-      address,
-      state,
-      city,
-      pincode,
-      donorType,
-    ].some(
-      (field) => !field || (typeof field === "string" && field.trim() === "")
-    )
-  ) {
-    throw new ApiError(400, "All fields are required.");
-  }
+  validateRequiredFields([
+    username,
+    email,
+    phoneNo,
+    password,
+    coordinates,
+    address,
+    state,
+    city,
+    pincode,
+    donorType,
+  ]);
 
   const existingUser = await Donor.findOne({
     $or: [{ username }, { email }, { phoneNo }],
@@ -59,6 +72,12 @@ const donorSignUp = asyncHandler(async (req, res) => {
       400,
       "User with same username or email or phoneNo already exists"
     );
+  }
+
+  const cityAdmins = await getCityAdmin(city);
+
+  if (cityAdmins.length === 0) {
+    throw new ApiError(400, "Not available in your city");
   }
 
   // check for avatar file
@@ -74,20 +93,13 @@ const donorSignUp = asyncHandler(async (req, res) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // convert coordinates into array of numbers
-  const coordinatesArray = coordinates.map(Number);
-
-  // construct location object
-  const location = {
-    type: "Point",
-    coordinates: coordinatesArray,
-    properties: {
-      address,
-      state: state.toLowerCase(),
-      city: city.toLowerCase(),
-      pincode,
-    },
-  };
+  const location = createLocationObject({
+    coordinates,
+    address,
+    state,
+    city,
+    pincode,
+  });
 
   const user = await Donor.create({
     ...(avatarLocalPath && { avatar: avatar.url }), // optional
@@ -126,24 +138,18 @@ const recipientSignUp = asyncHandler(async (req, res) => {
     registerationNo,
   } = req.body;
 
-  if (
-    [
-      username,
-      email,
-      phoneNo,
-      password,
-      coordinates,
-      address,
-      state,
-      city,
-      pincode,
-      organizationType,
-    ].some(
-      (field) => !field || (typeof field === "string" && field.trim() === "")
-    )
-  ) {
-    throw new ApiError(400, "All fields are required.");
-  }
+  validateRequiredFields([
+    username,
+    email,
+    phoneNo,
+    password,
+    coordinates,
+    address,
+    state,
+    city,
+    pincode,
+    organizationType,
+  ]);
 
   const existingUser = await Recipient.findOne({
     $or: [{ username }, { email }, { phoneNo }],
@@ -154,6 +160,12 @@ const recipientSignUp = asyncHandler(async (req, res) => {
       400,
       "User with same username or email or phoneNo already exists"
     );
+  }
+
+  const cityAdmins = await getCityAdmin(city);
+
+  if (cityAdmins.length === 0) {
+    throw new ApiError(400, "Not available in your city");
   }
 
   // check for avatar file
@@ -169,20 +181,14 @@ const recipientSignUp = asyncHandler(async (req, res) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // convert coordinates into array of numbera
-  const coordinatesArray = coordinates.map(Number);
-
   // construct location object
-  const location = {
-    type: "Point",
-    coordinates: coordinatesArray,
-    properties: {
-      address,
-      state: state.toLowerCase(),
-      city: city.toLowerCase(),
-      pincode,
-    },
-  };
+  const location = createLocationObject({
+    coordinates,
+    address,
+    state,
+    city,
+    pincode,
+  });
 
   const user = await Recipient.create({
     ...(avatarLocalPath && { avatar: avatar.url }), // optional
@@ -203,23 +209,7 @@ const recipientSignUp = asyncHandler(async (req, res) => {
 
   console.log("Recipient Signed Up Successfully");
 
-  // get city admins form the same city
-  const cityAdminEmails = await CityAdmin.find(
-    { "location.properties.city": createdUser.location.properties.city },
-    { _id: 0, role: 0, email: 1 }
-  );
-
-  let emailList;
-
-  if (cityAdminEmails.length === 0) {
-    // if there is no city admin for the city
-    emailList = [process.env.ADMIN_EMAIL];
-  } else {
-    // create an array of city admin emails
-    emailList = cityAdminEmails.map((cityAdmin) => cityAdmin.email);
-  }
-
-  console.log(emailList);
+  const emailList = cityAdmins.map((cityAdmin) => cityAdmin.email);
 
   const message = `
     <p>New Recipient has registered themselves on our FeedForward Platform <br/>
@@ -248,9 +238,10 @@ const recipientSignUp = asyncHandler(async (req, res) => {
 const userLogin = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
 
-  if ([username, email, password].some((field) => field?.trim() === "")) {
-    throw new ApiError(400, "Email and password are required!");
-  }
+  validateRequiredFields(
+    [username, password],
+    "Username and Password are required"
+  );
 
   const user = await User.findOne({ $or: [{ username }, { email }] });
 
@@ -293,23 +284,17 @@ const createCityAdmin = asyncHandler(async (req, res) => {
     pincode,
   } = req.body;
 
-  if (
-    [
-      username,
-      email,
-      phoneNo,
-      password,
-      coordinates,
-      address,
-      state,
-      city,
-      pincode,
-    ].some(
-      (field) => !field || (typeof field === "string" && field.trim() === "")
-    )
-  ) {
-    throw new ApiError(400, "All fields are required.");
-  }
+  validateRequiredFields([
+    username,
+    email,
+    phoneNo,
+    password,
+    coordinates,
+    address,
+    state,
+    city,
+    pincode,
+  ]);
 
   const existingUser = await CityAdmin.findOne({
     $or: [{ username }, { email }, { phoneNo }],
@@ -321,20 +306,13 @@ const createCityAdmin = asyncHandler(async (req, res) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // convert coordinates into array of numbers
-  const coordinatesArray = coordinates.map(Number);
-
-  // construct location object
-  const location = {
-    type: "Point",
-    coordinates: coordinatesArray,
-    properties: {
-      address,
-      state: state.toLowerCase(),
-      city: city.toLowerCase(),
-      pincode,
-    },
-  };
+  const location = createLocationObject({
+    coordinates,
+    address,
+    state,
+    city,
+    pincode,
+  });
 
   const user = await CityAdmin.create({
     username,

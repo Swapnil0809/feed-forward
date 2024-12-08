@@ -1,15 +1,16 @@
 import asyncHandler from "express-async-handler";
 
+import { FoodPost } from "../models/foodPost.model.js";
+import { Donation } from "../models/donation.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { validateRequiredFields } from "../utils/validateRequiredFields.js";
+import { createLocationObject } from "../utils/createLocationObject.js";
 import { sendEmail } from "../utils/mailer.js";
 import {
   uploadOnCloudinary,
   deleteFromCloudinary,
 } from "../utils/cloudinary.js";
-import { FoodPost } from "../models/foodPost.model.js";
-import { PostRequest } from "../models/postRequest.model.js";
-import { Donation } from "../models/donation.model.js";
 
 const addFoodPost = asyncHandler(async (req, res) => {
   const {
@@ -25,13 +26,15 @@ const addFoodPost = asyncHandler(async (req, res) => {
     pincode,
   } = req.body;
 
-  if (
-    [title, description, quantity, quantityUnit, foodType, bestBefore].some(
-      (field) => !field || (typeof field === "string" && field.trim() === "")
-    )
-  ) {
-    throw new ApiError(400, "All fields are required.");
-  }
+  validateRequiredFields([
+    title,
+    description,
+    quantity,
+    quantityUnit,
+    foodType,
+    bestBefore,
+    useUserLocation,
+  ]);
 
   // upload images to cloudinary
   const uploadPromises = req.files?.map((file) =>
@@ -48,20 +51,15 @@ const addFoodPost = asyncHandler(async (req, res) => {
   if (useUserLocation === "true") {
     location = req.user.location;
   } else {
-    // convert coordinates into array of numbers
-    const coordinatesArray = coordinates.map(Number);
-
     // construct location object
-    location = {
-      type: "Point",
-      coordinates: coordinatesArray,
-      properties: {
-        address,
-        state: req.user.location.properties.state,
-        city: req.user.location.properties.city,
-        pincode,
-      },
-    };
+    location = createLocationObject({
+      userLocation: req.user.location,
+      coordinates,
+      address,
+      state,
+      city,
+      pincode,
+    });
   }
 
   const foodPost = await FoodPost.create({
@@ -141,17 +139,14 @@ const updateFoodPost = asyncHandler(async (req, res) => {
   if (useUserLocation === "true") {
     location = req.user.location;
   } else {
-    const coordinatesArray = coordinates.map(Number);
-    location = {
-      type: "Point",
-      coordinates: coordinatesArray || foodPost.location.coordinates,
-      properties: {
-        address: address || foodPost.location.properties.address,
-        state: state || foodPost.location.properties.state,
-        city: city || foodPost.location.properties.city,
-        pincode: pincode || foodPost.location.properties.pincode,
-      },
-    };
+    location = createLocationObject({
+      userLocation: req.user.location,
+      coordinates,
+      address,
+      state,
+      city,
+      pincode,
+    });
   }
 
   // update the food post fields
@@ -257,7 +252,7 @@ const requestFood = asyncHandler(async (req, res) => {
   const { foodId } = req.params;
 
   const foodPost = await FoodPost.findById(postId);
-  
+
   // check if food post exists
   if (!foodPost) {
     throw new ApiError(404, "Food post not found");
@@ -305,5 +300,5 @@ export {
   deleteFoodPost,
   getDonorFoodPosts,
   getAvailableFoodPosts,
-  requestFood
+  requestFood,
 };
