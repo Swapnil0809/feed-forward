@@ -1,7 +1,7 @@
 import asyncHandler from "express-async-handler";
 
 import { FoodRequest } from "../models/foodRequest.model.js";
-import { Donor } from "../models/user.model.js";
+import { Donor, Recipient } from "../models/user.model.js";
 import { Donation } from "../models/donation.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -51,7 +51,7 @@ const addFoodRequest = asyncHandler(async (req, res) => {
     <b>Title</b>:${foodRequest.title}<br/>
     <b>Description</b>:${foodRequest.description}<br/>
     <b>Quantiy</b>:${foodRequest.quantity} ${foodRequest.quantityUnit}<br/>
-    <b>Food Type type</b>:${foodRequest.foodType}<br/>
+    <b>Food Type</b>:${foodRequest.foodType}<br/>
     <b>Required By</b>:${foodRequest.requiredBy}<br/>
     </p>
   `;
@@ -196,6 +196,44 @@ const fulfillFoodRequest = asyncHandler(async (req, res) => {
   await foodRequest.updateOne({ status: "fulfilled" });
 
   console.log("Your donation is now in progress");
+
+  const qrCodeUrl = await generateQRCode(donation._id);
+
+  const recipient = await Recipient.findById(foodRequest.requestedBy, {
+    _id: 0,
+    role: 0,
+    email: 1,
+  });
+
+  const donorMessage = `
+    <p>your wish to fulfill ${recipient.username}'s food request has been approved <br/>
+    The Recipient details are: <br/>
+    <b>Email</b>:${recipient.email}<br/>
+    <b>Phone No</b>:${recipient.phoneNo}<br/>
+    <b>Organization Name</b>:${recipient.organizationName} ${foodPost.quantityUnit}<br/>
+    <b>Organization Type</b>:${recipient.organizationType}<br/><br/>
+    Please show the below QR code to recipient while they pickup the food <br/>
+    <img src="${qrCodeUrl}" alt="QR Code" />
+    </p>
+  `;
+
+  await sendEmail([req.user.email], "Donation Request", donorMessage);
+
+  const lon = req.user.location.coordinates[0];
+  const lat = req.user.location.coordinates[1];
+
+  const recipientMessage = `
+    <p>A donor wishes to fulfill your food request <br/>
+    The Donor details are: <br/>
+    <b>Email</b>:${req.user.email}<br/>
+    <b>Phone No</b>:${req.user.phoneNo}<br/>
+    Please collect your food from the below address & scan the QR code to complete the donation <br/>
+    <b>Address</b>:${foodPost.location.properties.address}<br/>
+    <a href="https://www.google.com/maps?q=${lat},${lon}">click here</a> to navigate closer to the location <br/>
+    </p>
+  `;
+
+  await sendEmail([recipient.email], "Donation in progress", recipientMessage);
 
   return res
     .status(200)
