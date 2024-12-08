@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { FiEdit2, FiTrash2, FiPlusCircle, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { FiEdit2, FiTrash2, FiPlusCircle } from "react-icons/fi";
 import { MdFastfood } from "react-icons/md";
 
 import { deletePost } from "../../api/foodPosts";
@@ -11,7 +11,6 @@ import ImageSlider from "./ImageSlider";
 const FoodPost = ({ foodPosts, userRole }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [editingPost, setEditingPost] = useState(null);
-  const [currentImageIndex, setCurrentImageIndex] = useState({});
 
   const deletePostMutation = useMutation({
     mutationFn: deletePost,
@@ -23,19 +22,6 @@ const FoodPost = ({ foodPosts, userRole }) => {
     },
   });
 
-  const nextImage = (postId) => {
-    setCurrentImageIndex(prev => ({
-      ...prev,
-      [postId]: (prev[postId] + 1) % foodPosts.find(post => post._id === postId).images.length
-    }));
-  };
-
-  const prevImage = (postId) => {
-    setCurrentImageIndex(prev => ({
-      ...prev,
-      [postId]: (prev[postId] - 1 + foodPosts.find(post => post._id === postId).images.length) % foodPosts.find(post => post._id === postId).images.length
-    }));
-  };
 
   return (
     <>
