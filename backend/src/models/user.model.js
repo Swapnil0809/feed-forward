@@ -53,6 +53,7 @@ const recipientSchema = new Schema({
   registerationNo: {
     type: String,
     unique: true,
+    sparse: true,
   },
   isVerified: {
     type: Boolean,

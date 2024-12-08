@@ -126,8 +126,6 @@ const recipientSignUp = asyncHandler(async (req, res) => {
     registerationNo,
   } = req.body;
 
-  console.log(req.body);
-
   if (
     [
       username,
