@@ -7,7 +7,7 @@ import { updateDonationStatus } from '../api/donation';
 function DonationComplete() {
     const {donationId } = useParams();
 
-    const {data:status,isLoading,isError} = useQuery({
+    const {data:status,isLoading,isError,error} = useQuery({
         queryKey:["donationStatus"],
         queryFn: () => updateDonationStatus(donationId),
         enabled: true        

@@ -43,6 +43,6 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/foodPost", foodPostRouter);
 app.use(".api/v1/postRequest", postRequestRouter);
 app.use("/api/v1/foodRequest", foodRequestRouter);
-app.use("/api/v1/donations", donationRouter);
+app.use("/api/v1/donation", donationRouter);
 
 export { app };
