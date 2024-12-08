@@ -6,6 +6,7 @@ import { MdFastfood } from "react-icons/md";
 
 import { deletePost } from "../../api/foodPosts";
 import FoodPostModal from "./FoodPostModal";
+import ImageSlider from "./ImageSlider";
 
 const FoodPost = ({ foodPosts, userRole }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -59,33 +60,7 @@ const FoodPost = ({ foodPosts, userRole }) => {
           {foodPosts &&
             foodPosts.map((post) => (
               <div key={post._id} className="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300 ease-in-out">
-                <div className="relative mb-4 h-64 overflow-hidden rounded-lg">
-                  {post.images.length > 0 && (
-                    <>
-                      <img 
-                        src={post.images[currentImageIndex[post._id] || 0]} 
-                        alt={`Food ${currentImageIndex[post._id] || 0 + 1}`} 
-                        className="w-full h-full object-cover"
-                      />
-                      {post.images.length > 1 && (
-                        <>
-                          <button 
-                            onClick={() => prevImage(post._id)} 
-                            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-opacity-75 transition duration-300"
-                          >
-                            <FiChevronLeft size={24} />
-                          </button>
-                          <button 
-                            onClick={() => nextImage(post._id)} 
-                            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-opacity-75 transition duration-300"
-                          >
-                            <FiChevronRight size={24} />
-                          </button>
-                        </>
-                      )}
-                    </>
-                  )}
-                </div>
+                <ImageSlider images={post.images} />
                 <h3 className="text-2xl font-semibold text-gray-800 mb-2">{post.title}</h3>
                 <p className="text-gray-600 mb-4">{post.description}</p>
                 <div className="flex flex-wrap gap-2 mb-4">
