@@ -17,11 +17,11 @@ const updateDonationStatus = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Donation not found");
   }
 
-  if (donation.status === "delivered") {
-    throw new ApiError(400, "Donation already delivered");
+  if (donation.status === "completed") {
+    throw new ApiError(400, "Donation already completed");
   }
 
-  donation.status = "delivered";
+  donation.status = "completed";
   await donation.save();
 
   if (donation.donationFrom === "FoodRequest") {
@@ -39,4 +39,4 @@ const updateDonationStatus = asyncHandler(async (req, res) => {
     );
 });
 
-export {updateDonationStatus}
+export { updateDonationStatus };

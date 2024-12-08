@@ -400,8 +400,8 @@ const getUserProfile = asyncHandler(async (req, res) => {
 const getAdminDashboardStats = asyncHandler(async () => {
   const totalCityAdmins = await CityAdmin.countDocuments();
   const totalDonors = await Donor.countDocuments();
-  const totalRecipients = await Recipient.countDocuments();
-  const totalDonations = await Donation.countDocuments();
+  const totalRecipients = await Recipient.countDocuments({ isVerified: true });
+  const totalDonations = await Donation.countDocuments({ status: "completed" });
 
   return {
     "City Admins": totalCityAdmins,
@@ -415,17 +415,18 @@ const getCityAdminDashboardStats = asyncHandler(async (city) => {
   const totalDonors = await Donor.countDocuments({
     "location.properties.city": city,
   });
-  const totalRecipient = await Recipient.countDocuments({
+  const totalRecipients = await Recipient.countDocuments({
     "location.properties.city": city,
-    isverified: true,
+    isVerified: true,
   });
   const totalDonations = await Donation.countDocuments({
     "location.properties.city": city,
+    status: "delivered",
   });
 
   return {
     Donors: totalDonors,
-    Recipients: totalRecipient,
+    Recipients: totalRecipients,
     Donations: totalDonations,
   };
 });
@@ -435,11 +436,19 @@ const getDonorDashboardStats = asyncHandler(async (user) => {
     postedBy: user._id,
     status: "available",
   });
-  const totalDonations = await Donation.countDocuments({ donorId: user._id });
+  const inProgressDonations = await Donation.countDocuments({
+    donorId: user._id,
+    status: "in-progress",
+  });
+  const totalDonations = await Donation.countDocuments({
+    donorId: user._id,
+    status: "completed",
+  });
 
   return {
     "Active Food Posts": activeFoodPosts,
-    Donations: totalDonations,
+    "In-Progress Donations": inProgressDonations,
+    "Completed Donations": totalDonations,
   };
 });
 
@@ -448,13 +457,18 @@ const getRecipientDashboardStats = asyncHandler(async (user) => {
     requestedBy: user._id,
     status: "unfulfilled",
   });
+  const inProgressDonations = await Donation.countDocuments({
+    recipientId: user._id,
+    status: "in-progress",
+  });
   const totalDonations = await Donation.countDocuments({
     recipientId: user._id,
   });
 
   return {
     "Active Food Requests": activeFoodRequests,
-    Donations: totalDonations,
+    "In-Progress Donations": inProgressDonations,
+    "Donations Received": totalDonations,
   };
 });
 

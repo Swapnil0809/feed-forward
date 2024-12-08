@@ -19,7 +19,7 @@ const donationSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["in-progress", "delivered"],
+      enum: ["in-progress", "completed"],
     },
   },
   { timestamps: true }
