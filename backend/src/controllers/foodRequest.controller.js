@@ -5,6 +5,8 @@ import { Donor, Recipient } from "../models/user.model.js";
 import { Donation } from "../models/donation.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { generateQRCode } from "../utils/generateQRCode.js";
+import { sendEmail } from "../utils/mailer.js";
 
 const addFoodRequest = asyncHandler(async (req, res) => {
   const { title, description, quantity, quantityUnit, foodType, requiredBy } =
@@ -177,10 +179,6 @@ const fulfillFoodRequest = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Already donated");
   }
 
-  if (!donation) {
-    throw new ApiError(500, "Something went wrong while adding donation");
-  }
-
   const donation = await Donation.create({
     donationFrom: "FoodRequest",
     referenceId: foodRequest._id,
@@ -193,7 +191,7 @@ const fulfillFoodRequest = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Something went wrong while adding donation");
   }
 
-  await foodRequest.updateOne({ status: "fulfilled" });
+  await foodRequest.updateOne({ status: "in-progress" });
 
   console.log("Your donation is now in progress");
 
@@ -202,7 +200,9 @@ const fulfillFoodRequest = asyncHandler(async (req, res) => {
   const recipient = await Recipient.findById(foodRequest.requestedBy, {
     _id: 0,
     role: 0,
+    username: 1,
     email: 1,
+    phoneNo: 1,
   });
 
   const donorMessage = `
@@ -210,7 +210,6 @@ const fulfillFoodRequest = asyncHandler(async (req, res) => {
     The Recipient details are: <br/>
     <b>Email</b>:${recipient.email}<br/>
     <b>Phone No</b>:${recipient.phoneNo}<br/>
-    <b>Organization Name</b>:${recipient.organizationName} ${foodPost.quantityUnit}<br/>
     <b>Organization Type</b>:${recipient.organizationType}<br/><br/>
     Please show the below QR code to recipient while they pickup the food <br/>
     <img src="${qrCodeUrl}" alt="QR Code" />
@@ -228,7 +227,7 @@ const fulfillFoodRequest = asyncHandler(async (req, res) => {
     <b>Email</b>:${req.user.email}<br/>
     <b>Phone No</b>:${req.user.phoneNo}<br/>
     Please collect your food from the below address & scan the QR code to complete the donation <br/>
-    <b>Address</b>:${foodPost.location.properties.address}<br/>
+    <b>Address</b>:${req.user.location.properties.address}<br/>
     <a href="https://www.google.com/maps?q=${lat},${lon}">click here</a> to navigate closer to the location <br/>
     </p>
   `;

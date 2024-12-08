@@ -313,16 +313,16 @@ const requestFood = asyncHandler(async (req, res) => {
     _id: 0,
     role: 0,
     email: 1,
+    phoneNo: 1,
   });
 
-  const qrCodeUrl = await generateQRCode(donation._id);
+  const qrCodeUrl = await generateQRCode("asdasfgre");
 
   const donorMessage = `
     <p>your food post has to donated to ${req.user.username} <br/>
     The Recipient details are: <br/>
     <b>Email</b>:${req.user.email}<br/>
     <b>Phone No</b>:${req.user.phoneNo}<br/>
-    <b>Organization Name</b>:${req.user.organizationName} ${foodPost.quantityUnit}<br/>
     <b>Organization Type</b>:${req.user.organizationType}<br/><br/>
     Please show the below QR code to recipient while they pickup the food <br/>
     <img src="${qrCodeUrl}" alt="QR Code" />
