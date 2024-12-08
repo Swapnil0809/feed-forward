@@ -62,25 +62,28 @@ function FoodRequestModal({setIsOpen,request}) {
       }
 
   return (
-    <div className=" w-full h-full absolute top-0 bg-gray-400/80 flex justify-center items-center">
-        <div className=" w-[60%] flex flex-wrap justify-center p-8 rounded-lg bg-white">
-            <div className="basis-full flex justify-end">
+    <div className="fixed inset-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center backdrop-blur-sm transition-opacity duration-300">
+        <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-300 ease-in-out">
+            <div className="bg-gradient-to-r from-green-400 to-blue-500 p-6 flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-white">
+                    {isEditMode ? "Edit Food Request" : "Add Food Request"}
+                </h2>
                 <button
-                    className=" text-xl text-black " 
+                    className="text-white hover:text-gray-200 transition duration-150 ease-in-out" 
                     onClick={() => setIsOpen(false)}
                 >
-                    <IoClose className=" text-2xl"/>
+                    <IoClose className="text-3xl" />
                 </button>
             </div>
-            <div>
+            <div className="p-8">
               <FormWrapper
                 onSubmit={handleSubmit}
                 schema={requestSchema}
                 defaultValues={request || {}}
               >
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                    <Input name="title" label="Title"/>
-                    <Input name="description" label="Description"/>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <Input name="title" label="Title" className="col-span-2"/>
+                    <Input name="description" label="Description" className="col-span-2"/>
                     <Input name="quantity" label="Quantity" type="number"/>
                     <Select name="quantityUnit" label="Quantity Unit" 
                       options={[
@@ -92,13 +95,15 @@ function FoodRequestModal({setIsOpen,request}) {
                         { value: "other", label: "other" },
                       ]}
                     />
-                    <Select name="foodType" label="Food Type" options={[{ value: "veg", label: "Veg" },
-                { value: "non-veg", label: "Non-veg" },]}/>
+                    <Select name="foodType" label="Food Type" options={[
+                      { value: "veg", label: "Veg" },
+                      { value: "non-veg", label: "Non-veg" },
+                    ]}/>
                     <Input name="requiredBy" label="Required By" type='date'/>
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-green-600 text-white px-6 py-3 rounded-md text-base sm:text-lg font-medium transition duration-300 ease-in-out hover:bg-green-700 shadow-md hover:shadow-lg"
+                  className="mt-8 w-full bg-green-500 text-white px-6 py-3 rounded-md text-lg font-medium transition duration-300 ease-in-out hover:bg-green-600"
                 >
                   {isEditMode ? "Update Request" : "Add Request"}
                 </button>

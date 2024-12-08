@@ -85,62 +85,77 @@ function FoodPostModal({setIsOpen,post}) {
     }
   }
   return (
-    <div className=" w-full h-full absolute top-0 left-0 bg-gray-400/80 flex justify-center items-center">
-        <div className=" w-[60%] flex flex-wrap justify-center p-8 rounded-lg bg-white">
-            <div className="basis-full flex justify-end">
-                <button
-                    className=" text-xl text-black " 
-                    onClick={() => setIsOpen(false)}
-                >
-                    <IoClose className=" text-2xl"/>
-                </button>
-            </div>
-            <div>
-              <FormWrapper
-                onSubmit={handleSubmit}
-                schema={postSchema}
-                defaultValues={post || {}}
-              >
-                <div>
-                    <FileInput
-                        name="images"
-                        label="Images"
-                        multiple={true}
-                        previewStyle='post'
-                        initialFiles={post?.images || []}
-                    />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                    <Input name="title" label="Title"/>
-                    <Input name="description" label="Description"/>
-                    <Input name="quantity" label="Quantity" type="number"/>
-                    <Select name="quantityUnit" label="Quantity Unit" 
-                      options={[
-                        { value: "kg", label: "kg" },
-                        { value: "units", label: "units" },
-                        { value: "litre", label: "litre" },
-                        { value: "packet", label: "packet" },
-                        { value: "box", label: "box" },
-                        { value: "other", label: "other" },
-                      ]}
-                    />
-                    <Select name="foodType" label="Food Type" options={[{ value: "veg", label: "Veg" },
-                { value: "non-veg", label: "Non-veg" },]}/>
-                    <Input name="bestBefore" label="Best Before" type='date'/>
-                    <Checkbox name="useUserLocation" label="Use your location" defaultValue={false}/>
-                    <Input name="address" label="Address"/>
-                    <Input name="pincode" label="Pincode"/>
-                </div>
-                <button
-                  type="submit"
-                  className="w-full bg-green-600 text-white px-6 py-3 rounded-md text-base sm:text-lg font-medium transition duration-300 ease-in-out hover:bg-green-700 shadow-md hover:shadow-lg"
-                >
-                  {isEditMode ? "Update Post" : "Add Post"}
-                </button>
-              </FormWrapper>
-            </div>
-        </div>
+    <div className="fixed inset-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center backdrop-blur-sm transition-opacity duration-300">
+  <div className="w-full max-w-4xl bg-white rounded-xl shadow-2xl overflow-hidden transform transition-all duration-300 ease-in-out">
+    <div className="bg-gradient-to-r from-green-400 to-blue-500 p-6 flex justify-between items-center">
+      <h2 className="text-2xl font-bold text-white">
+        {isEditMode ? "Edit Food Post" : "Add Food Post"}
+      </h2>
+      <button
+        className="text-white hover:text-gray-200 transition duration-150 ease-in-out"
+        onClick={() => setIsOpen(false)}
+      >
+        <IoClose className="text-3xl" />
+      </button>
     </div>
+    <div className="p-8">
+      <FormWrapper
+        onSubmit={handleSubmit}
+        schema={postSchema}
+        defaultValues={post || {}}
+      >
+        <div className="mb-6">
+          <FileInput
+            name="images"
+            label="Images"
+            multiple={true}
+            previewStyle="post"
+            initialFiles={post?.images || []}
+          />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Input name="title" label="Title" />
+          <Input name="description" label="Description" />
+          <Input name="quantity" label="Quantity" type="number" />
+          <Select
+            name="quantityUnit"
+            label="Quantity Unit"
+            options={[
+              { value: "kg", label: "kg" },
+              { value: "units", label: "units" },
+              { value: "litre", label: "litre" },
+              { value: "packet", label: "packet" },
+              { value: "box", label: "box" },
+              { value: "other", label: "other" },
+            ]}
+          />
+          <Select
+            name="foodType"
+            label="Food Type"
+            options={[
+              { value: "veg", label: "Veg" },
+              { value: "non-veg", label: "Non-veg" },
+            ]}
+          />
+          <Input name="bestBefore" label="Best Before" type="date" />
+          <Checkbox
+            name="useUserLocation"
+            label="Use Your Location"
+            defaultValue={false}
+          />
+          <Input name="address" label="Address" />
+          <Input name="pincode" label="Pincode" />
+        </div>
+        <button
+          type="submit"
+          className="mt-8 w-full bg-green-500 text-white px-6 py-3 rounded-md text-lg font-medium transition duration-300 ease-in-out hover:bg-green-600">
+          {isEditMode ? "Update Post" : "Add Post"}
+        </button>
+      </FormWrapper>
+    </div>
+  </div>
+</div>
+
   )
 }
 
