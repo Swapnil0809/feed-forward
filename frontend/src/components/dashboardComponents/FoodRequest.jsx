@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-import { deleteFoodRequest } from "../../api/foodRequest";
+import { deleteFoodRequest,fulfillFoodRequest } from "../../api/foodRequest";
+import { parseErrorMessage } from "../../utils/parseErrorMessage";
 import FoodRequestModal from "./FoodRequestModal";
 
 const FoodRequest = ({ foodRequests, userRole }) => {
@@ -16,8 +17,20 @@ const FoodRequest = ({ foodRequests, userRole }) => {
     },
     onError: (error) => {
       console.log(error);
+      toast.error(parseErrorMessage(error?.response));
     },
   });
+
+  const fulfillRequestMutation = useMutation({
+    mutationFn: fulfillFoodRequest,
+    onSuccess: () => {
+      toast.success("Donation is now in progress");
+    },
+    onError: (error) => {
+      console.log(error);
+      toast.error(parseErrorMessage(error?.response));
+    },
+  })
 
   return (
     <>
@@ -83,7 +96,10 @@ const FoodRequest = ({ foodRequests, userRole }) => {
                   </div>
                 )}
                 {userRole === "Donor" && (
-                  <button className="w-full mt-4 py-2 px-4 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-300 ease-in-out">
+                  <button 
+                    className="w-full mt-4 py-2 px-4 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-300 ease-in-out"
+                    onClick={() => fulfillRequestMutation.mutate(request._id)}
+                  >
                     Donate
                   </button>
                 )}

@@ -32,3 +32,8 @@ export const updatePost = async ({ id, formData }) => {
   );
   return response.data.data;
 };
+
+export const requestFood = async (id) => {
+  const response = await axiosInstance.post(`/foodPost/request-food/${id}`);
+  return response.data.data;
+};

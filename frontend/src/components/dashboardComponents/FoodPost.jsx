@@ -4,7 +4,8 @@ import toast from "react-hot-toast";
 import { FiEdit2, FiTrash2, FiPlusCircle } from "react-icons/fi";
 import { MdFastfood } from "react-icons/md";
 
-import { deletePost } from "../../api/foodPosts";
+import { deletePost, requestFood } from "../../api/foodPosts";
+import { parseErrorMessage } from "../../utils/parseErrorMessage";
 import FoodPostModal from "./FoodPostModal";
 import ImageSlider from "./ImageSlider";
 
@@ -21,6 +22,17 @@ const FoodPost = ({ foodPosts, userRole }) => {
       console.log(error);
     },
   });
+
+  const requestFoodMutation = useMutation({
+    mutationFn: requestFood,
+    onSuccess: () => {
+      toast.success("Request approved!, your donation is in progress");
+    },
+    onError: (error) => {
+      console.log(error);
+      toast.error(parseErrorMessage(error?.response));
+    },
+  })
 
 
   return (
@@ -94,7 +106,10 @@ const FoodPost = ({ foodPosts, userRole }) => {
                   </div>
                 )}
                 {userRole === "Recipient" && (
-                  <button className="w-full mt-4 py-2 px-4 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-300 ease-in-out">
+                  <button 
+                    className="w-full mt-4 py-2 px-4 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-300 ease-in-out"
+                    onClick={() => requestFoodMutation.mutate(post._id)}
+                  >
                     Request
                   </button>
                 )}

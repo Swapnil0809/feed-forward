@@ -169,8 +169,7 @@ const fulfillFoodRequest = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Something went wrong while adding donation");
   }
 
-  foodRequest.status = "in-progress";
-  await foodRequest.save();
+  await foodRequest.updateOne({ status: "fulfilled" });
 
   console.log("Your donation is now in progress");
 

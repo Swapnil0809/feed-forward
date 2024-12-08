@@ -11,6 +11,7 @@ import Select from '../formComponents/Select'
 import Checkbox from '../formComponents/CheckBox';
 import { useFetchCoordinates } from '../../hooks/useFetchCoordinates';
 import { createFormData } from '../../utils/createFormData';
+import { parseErrorMessage } from '../../utils/parseErrorMessage';
 import { addPost, updatePost } from '../../api/foodPosts';
 
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -54,6 +55,7 @@ function FoodPostModal({setIsOpen,post}) {
     },
     onError:(error) => {
       console.log(error)
+      toast.error(parseErrorMessage(error?.response));
     }
   })
 
@@ -65,6 +67,7 @@ function FoodPostModal({setIsOpen,post}) {
     },
     onError:(error) => {
       console.log(error)
+      toast.error(parseErrorMessage(error?.response));
     }
   })
 

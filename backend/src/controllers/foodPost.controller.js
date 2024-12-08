@@ -249,7 +249,7 @@ const getAvailableFoodPosts = asyncHandler(async (req, res) => {
 });
 
 const requestFood = asyncHandler(async (req, res) => {
-  const { foodId } = req.params;
+  const { postId } = req.params;
 
   const foodPost = await FoodPost.findById(postId);
 
@@ -278,6 +278,8 @@ const requestFood = asyncHandler(async (req, res) => {
   if (!donation) {
     throw new ApiError(500, "Something went wrong while adding donation");
   }
+
+  await foodPost.updateOne({ status: "claimed" });
 
   console.log(
     "Your request has been approved, now the donation is in progress"

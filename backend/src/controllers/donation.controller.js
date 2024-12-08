@@ -21,13 +21,17 @@ const updateDonationStatus = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Donation already completed");
   }
 
-  donation.status = "completed";
-  await donation.save();
+  await donation.updateOne({ status: "completed" });
 
   if (donation.donationFrom === "FoodRequest") {
-    const foodRequest = await FoodRequest.findById(donation.referenceId);
-    foodRequest.status = "fulfilled";
-    await foodRequest.save();
+    const foodRequest = await FoodRequest.findByIdAndUpdate(
+      donation.referenceId,
+      { status: "fulfilled" }
+    );
+  } else {
+    const foodPost = await FoodPost.findByIdAndUpdate(donation.referenceId, {
+      status: "donated",
+    });
   }
 
   console.log("Donation status updated successfully");

@@ -8,6 +8,7 @@ import { FaUser, FaEnvelope, FaPhone, FaLock, FaMapMarkerAlt, FaCity, FaFlag, Fa
 import FormWrapper from "../formComponents/FormWrapper";
 import Input from "../formComponents/Input"
 import { createFormData } from "../../utils/createFormData";
+import { parseErrorMessage } from "../../utils/parseErrorMessage";
 import { useFetchCoordinates } from "../../hooks/useFetchCoordinates";
 import { addCityAdmin } from "../../api/admin";
 
@@ -33,7 +34,7 @@ function AddCityAdmin({ setAddCityAdmin }) {
     },
     onError: (error) => {
       console.log(error);
-      toast.error("Failed to add city admin");
+      toast.error(parseErrorMessage(error?.response));
     },
   });
 

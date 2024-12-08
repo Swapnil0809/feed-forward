@@ -8,6 +8,7 @@ import FormWrapper from '../formComponents/FormWrapper'
 import Input from '../formComponents/Input'
 import Select from '../formComponents/Select'
 import { createFormData } from '../../utils/createFormData';
+import { parseErrorMessage } from '../../utils/parseErrorMessage';
 import { addFoodRequest, updateFoodRequest } from '../../api/foodRequest';
 
 const requestSchema = z.object({
@@ -37,6 +38,7 @@ function FoodRequestModal({setIsOpen,request}) {
           },
           onError:(error) => {
             console.log(error)
+            toast.error(parseErrorMessage(error?.response));
           }
     })
 
@@ -48,6 +50,7 @@ function FoodRequestModal({setIsOpen,request}) {
           },
           onError:(error) => {
             console.log(error)
+            toast.error(parseErrorMessage(error?.response));
           }
     })
 
