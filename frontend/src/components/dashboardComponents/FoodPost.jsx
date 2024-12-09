@@ -59,7 +59,7 @@ const FoodPost = ({ foodPosts, userRole }) => {
             foodPosts.map((post) => (
               <div key={post._id} className="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300 ease-in-out">
                 <ImageSlider images={post.images} />
-                <h3 className="text-2xl font-semibold text-gray-800 mb-2">{post.title}</h3>
+                <h3 className="text-2xl font-semibold text-gray-800 mb-2 ">{post.title}</h3>
                 <p className="text-gray-600 mb-4">{post.description}</p>
                 <div className="flex flex-wrap gap-2 mb-4">
                   <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">

@@ -85,8 +85,8 @@ function FoodRequestModal({setIsOpen,request}) {
                 defaultValues={request || {}}
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <Input name="title" label="Title" className="col-span-2"/>
-                    <Input name="description" label="Description" className="col-span-2"/>
+                    <Input name="title" label="Title"/>
+                    <Input name="description" label="Description"/>
                     <Input name="quantity" label="Quantity" type="number"/>
                     <Select name="quantityUnit" label="Quantity Unit" 
                       options={[
