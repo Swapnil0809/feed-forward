@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-import { deleteFoodRequest,fulfillFoodRequest } from "../../api/foodRequest";
+import { deleteFoodRequest, fulfillFoodRequest } from "../../api/foodRequest";
 import { parseErrorMessage } from "../../utils/parseErrorMessage";
 import FoodRequestModal from "./FoodRequestModal";
 
@@ -34,11 +34,15 @@ const FoodRequest = ({ foodRequests, userRole }) => {
 
   return (
     <>
-      <div className="w-full max-w-4xl mx-auto p-6 rounded-xl shadow-lg">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">Food Requests</h1>
+      <div className="w-full max-w-4xl mx-auto p-6 bg-gradient-to-br from-blue-50 to-green-50 rounded-xl shadow-lg">
+        <h1 className="text-4xl font-extrabold text-gray-800 mb-8 text-center">
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-green-500">
+            Food Requests
+          </span>
+        </h1>
         {userRole === "Recipient" && (
           <button
-            className="w-full mb-6 py-3 px-6 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:from-green-500 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:-translate-y-1"
+            className="w-full mb-8 py-3 px-6 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600"
             onClick={() => {
               setEditingRequest(null);
               setIsOpen(true);
@@ -50,9 +54,9 @@ const FoodRequest = ({ foodRequests, userRole }) => {
         <div className="space-y-6 overflow-y-auto max-h-[70vh] pr-2">
           {foodRequests &&
             foodRequests.map((request) => (
-              <div key={request._id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300 ease-in-out">
+              <div key={request._id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300 ">
                 <h3 className="text-2xl font-semibold text-gray-800 mb-2">{request.title}</h3>
-                <p className="text-gray-600 mb-4">{request.description}</p>
+                <p className="text-gray-600 mb-4 border-gray-300">{request.description}</p>
                 <div className="flex flex-wrap gap-2 mb-4">
                   <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
                     Quantity: {request.quantity}
@@ -77,7 +81,7 @@ const FoodRequest = ({ foodRequests, userRole }) => {
                 {userRole === "Recipient" && (
                   <div className="flex space-x-2">
                     <button
-                      className="flex-1 py-2 px-4 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition duration-300 ease-in-out"
+                      className="flex-1 py-2 px-4 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:-translate-y-1"
                       onClick={() => {
                         setEditingRequest(request);
                         setIsOpen(true);
@@ -86,7 +90,7 @@ const FoodRequest = ({ foodRequests, userRole }) => {
                       Edit
                     </button>
                     <button
-                      className="flex-1 py-2 px-4 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 transition duration-300 ease-in-out"
+                      className="flex-1 py-2 px-4 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:-translate-y-1"
                       onClick={() => {
                         deleteRequestMutation.mutate(request._id);
                       }}
@@ -97,7 +101,7 @@ const FoodRequest = ({ foodRequests, userRole }) => {
                 )}
                 {userRole === "Donor" && (
                   <button 
-                    className="w-full mt-4 py-2 px-4 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-300 ease-in-out"
+                    className="w-full mt-4 py-2 px-4 bg-gradient-to-r from-blue-500 to-green-500 text-white font-medium rounded-lg hover:from-blue-600 hover:to-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:-translate-y-1"
                     onClick={() => fulfillRequestMutation.mutate(request._id)}
                   >
                     Donate
@@ -108,10 +112,15 @@ const FoodRequest = ({ foodRequests, userRole }) => {
         </div>
       </div>
       {isOpen && (
-        <FoodRequestModal setIsOpen={setIsOpen} post={editingRequest} />
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gray-600 bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
+            <FoodRequestModal setIsOpen={setIsOpen} post={editingRequest} />
+          </div>
+        </div>
       )}
     </>
   );
 };
 
 export default FoodRequest;
+
