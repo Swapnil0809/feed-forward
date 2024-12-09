@@ -113,7 +113,7 @@ const deleteFoodRequest = asyncHandler(async (req, res) => {
   }
 
   // check if user is authorized to delete food request
-  if (!foodRequest.postedBy.equals(req.user._id)) {
+  if (!foodRequest.requestedBy.equals(req.user._id)) {
     throw new ApiError(403, "Unauthorized access to update food request");
   }
 
