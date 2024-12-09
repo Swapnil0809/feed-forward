@@ -85,7 +85,7 @@ const donorSignUp = asyncHandler(async (req, res) => {
 
   let avatar;
   if (avatarLocalPath) {
-    avatar = await uploadOnCloudinary(avatarLocalPath);
+    avatar = await uploadOnCloudinary(avatarLocalPath, "avatar-images");
     if (!avatar.url) {
       throw new ApiError(400, "Something went wrong while uploading avatar");
     }
@@ -173,7 +173,7 @@ const recipientSignUp = asyncHandler(async (req, res) => {
 
   let avatar;
   if (avatarLocalPath) {
-    avatar = await uploadOnCloudinary(avatarLocalPath);
+    avatar = await uploadOnCloudinary(avatarLocalPath, "avatar-images");
     if (!avatar.url) {
       throw new ApiError(400, "Something went wrong while uploading avatar");
     }

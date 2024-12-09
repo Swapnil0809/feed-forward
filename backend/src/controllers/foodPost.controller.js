@@ -40,7 +40,7 @@ const addFoodPost = asyncHandler(async (req, res) => {
 
   // upload images to cloudinary
   const uploadPromises = req.files?.map((file) =>
-    uploadOnCloudinary(file.path)
+    uploadOnCloudinary(file.path, "food-posts")
   );
 
   // wait for all uploads to complete
@@ -149,7 +149,7 @@ const updateFoodPost = asyncHandler(async (req, res) => {
 
     // upload new images to Cloudinary
     const uploadPromises = req.files.map((file) =>
-      uploadOnCloudinary(file.path)
+      uploadOnCloudinary(file.path, "food-posts")
     );
     const uploadResults = await Promise.all(uploadPromises);
 
