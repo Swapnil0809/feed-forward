@@ -3,10 +3,9 @@ import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import toast from "react-hot-toast";
 import { IoClose } from "react-icons/io5";
-import { FaUser, FaEnvelope, FaPhone, FaLock, FaMapMarkerAlt, FaCity, FaFlag, FaMapPin } from "react-icons/fa";
 
 import FormWrapper from "../formComponents/FormWrapper";
-import Input from "../formComponents/Input"
+import Input from "../formComponents/Input";
 import { createFormData } from "../../utils/createFormData";
 import { parseErrorMessage } from "../../utils/parseErrorMessage";
 import { useFetchCoordinates } from "../../hooks/useFetchCoordinates";
@@ -39,67 +38,54 @@ function AddCityAdmin({ setAddCityAdmin }) {
   });
 
   const handleSubmit = async (data) => {
-    console.log(data);
     const coordinates = await fetchCoordinates(data.pincode);
     data.coordinates = coordinates;
     const formData = createFormData(data);
-    console.log(Array.from(formData.entries()))
     addCityAdminMutation.mutate(formData);
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center ">
-      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-4xl m-4 p-6">
+    <div className="fixed inset-0 bg-gray-800 bg-opacity-70 overflow-y-auto h-full w-full flex justify-center items-center border border-gray-900">
+      <div className="relative bg-white w-full max-w-4xl mx-auto p-8 rounded-xl shadow-lg">
         <button
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+          className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 transition-colors duration-200"
           onClick={() => setAddCityAdmin(false)}
         >
           <IoClose className="text-2xl" />
         </button>
-        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center ">Add City Admin</h2>
+        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center ">
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-green-500">
+            Add City Admin
+          </span>
+        </h2>
         <FormWrapper onSubmit={handleSubmit} schema={cityAdminSchema}>
-          <div className="bg-gray-50 p-6 rounded-lg">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="relative">
-                <FaUser className="absolute top-3 left-3 text-gray-400" />
-                <Input name="username" label="Username" type="text" className="pl-10 w-full px-4 py-2 text-gray-700 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              { name: "username", label: "Username", type: "text" },
+              { name: "email", label: "Email", type: "email" },
+              { name: "phoneNo", label: "Phone Number", type: "text" },
+              { name: "password", label: "Password", type: "password" },
+              { name: "address", label: "Address", type: "text" },
+              { name: "city", label: "City", type: "text" },
+              { name: "state", label: "State", type: "text" },
+              { name: "pincode", label: "Pincode", type: "text" },
+            ].map((field) => (
+              <div key={field.name} className="relative">
+                <Input
+                  name={field.name}
+                  label={field.label}
+                  type={field.type}
+                  className="w-full px-4 py-3 text-gray-700 "
+                />
               </div>
-              <div className="relative">
-                <FaEnvelope className="absolute top-3 left-3 text-gray-400" />
-                <Input name="email" label="Email" type="email" className="pl-10 w-full px-4 py-2 text-gray-700 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" />
-              </div>
-              <div className="relative">
-                <FaPhone className="absolute top-3 left-3 text-gray-400" />
-                <Input name="phoneNo" label="Phone Number" type="text" className="pl-10 w-full px-4 py-2 text-gray-700 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" />
-              </div>
-              <div className="relative">
-                <FaLock className="absolute top-3 left-3 text-gray-400" />
-                <Input name="password" label="Password" type="password" className="pl-10 w-full px-4 py-2 text-gray-700 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" />
-              </div>
-              <div className="relative">
-                <FaMapMarkerAlt className="absolute top-3 left-3 text-gray-400" />
-                <Input name="address" label="Address" className="pl-10 w-full px-4 py-2 text-gray-700 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" />
-              </div>
-              <div className="relative">
-                <FaCity className="absolute top-3 left-3 text-gray-400" />
-                <Input name="city" label="City" className="pl-10 w-full px-4 py-2 text-gray-700 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" />
-              </div>
-              <div className="relative">
-                <FaFlag className="absolute top-3 left-3 text-gray-400" />
-                <Input name="state" label="State" className="pl-10 w-full px-4 py-2 text-gray-700 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" />
-              </div>
-              <div className="relative">
-                <FaMapPin className="absolute top-3 left-3 text-gray-400" />
-                <Input name="pincode" label="Pincode" className="pl-10 w-full px-4 py-2 text-gray-700 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" />
-              </div>
-            </div>
-            <button
-              type="submit"
-              className="mt-8 w-full bg-green-500 text-white px-6 py-3 rounded-md text-lg font-medium transition duration-300 ease-in-out hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
-            >
-              Add City Admin
-            </button>
+            ))}
           </div>
+          <button
+            type="submit"
+            className="mt-8 w-full py-3 px-6 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600"
+          >
+            Add City Admin
+          </button>
         </FormWrapper>
       </div>
     </div>
@@ -107,4 +93,3 @@ function AddCityAdmin({ setAddCityAdmin }) {
 }
 
 export default AddCityAdmin;
-

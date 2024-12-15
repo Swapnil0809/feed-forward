@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { GiFoodTruck } from "react-icons/gi";
+
 
 import { deleteFoodRequest, fulfillFoodRequest } from "../../api/foodRequest";
 import { parseErrorMessage } from "../../utils/parseErrorMessage";
@@ -35,8 +37,10 @@ const FoodRequest = ({ foodRequests, userRole }) => {
   return (
     <>
       <div className="w-full max-w-4xl mx-auto p-6 bg-gradient-to-br from-blue-50 to-green-50 rounded-xl shadow-lg">
-        <h1 className="text-4xl font-extrabold text-gray-800 mb-8 text-center">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-green-500">
+        <h1 className="text-3xl font-extrabold text-gray-800 mb-8 text-center">
+          <span className="bg-clip-text text-transparent bg-gray-700 flex">
+          <GiFoodTruck className="mr-2 text-green-500 items-center size-9" />
+          
             Food Requests
           </span>
         </h1>
@@ -56,7 +60,7 @@ const FoodRequest = ({ foodRequests, userRole }) => {
             foodRequests.map((request) => (
               <div key={request._id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300 ">
                 <h3 className="text-2xl font-semibold text-gray-800 mb-2">{request.title}</h3>
-                <p className="text-gray-600 mb-4 border-gray-300">{request.description}</p>
+                <p className="text-gray-600 mb-4 b">{request.description}</p>
                 <div className="flex flex-wrap gap-2 mb-4">
                   <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
                     Quantity: {request.quantity}
@@ -101,7 +105,7 @@ const FoodRequest = ({ foodRequests, userRole }) => {
                 )}
                 {userRole === "Donor" && (
                   <button 
-                    className="w-full mt-4 py-2 px-4 bg-gradient-to-r from-blue-500 to-green-500 text-white font-medium rounded-lg hover:from-blue-600 hover:to-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:-translate-y-1"
+                    className="w-full mt-4 py-2 px-4 bg-green-500 text-white font-medium rounded-lg hover:from-blue-600 hover:to-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:-translate-y-1"
                     onClick={() => fulfillRequestMutation.mutate(request._id)}
                   >
                     Donate

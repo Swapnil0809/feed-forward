@@ -37,9 +37,9 @@ const FoodPost = ({ foodPosts, userRole }) => {
 
   return (
     <>
-      <div className="w-full max-w-4xl mx-auto p-6 bg-white rounded-xl shadow-lg">
+      <div className="w-full max-w-4xl mx-auto p-6 bg-white rounded-xl shadow-lg bg-gradient-to-br from-blue-50 to-green-50">
         <h1 className="text-3xl font-bold text-gray-800 mb-6 flex items-center">
-          <MdFastfood className="mr-2 text-green-500" />
+          <MdFastfood className="mr-2 text-green-500 items-center size-9" />
           Food Posts
         </h1>
         {userRole === "Donor" && (
