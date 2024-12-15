@@ -88,7 +88,7 @@ function FoodPostModal({setIsOpen,post}) {
     }
   }
   return (
-    <div className="fixed inset-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center backdrop-blur-sm transition-opacity duration-300">
+    <div className="fixed inset-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center">
   <div className="w-full max-w-4xl bg-white rounded-xl shadow-2xl overflow-hidden transform transition-all duration-300 ease-in-out">
     <div className="bg-gradient-to-r from-green-400 to-blue-500 p-6 flex justify-between items-center">
       <h2 className="text-2xl font-bold text-white">

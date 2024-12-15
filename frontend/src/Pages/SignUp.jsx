@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { z } from "zod";
@@ -72,21 +72,21 @@ export default function Signup() {
     if (!userType) {
       return (
         <div className="text-center">
-          <h2 className="text-xl sm:text-2xl font-semibold mb-6">Choose Your Role</h2>
-          <div className="space-y-4 sm:space-y-0 sm:space-x-4 flex flex-col sm:flex-row justify-center">
+          <h2 className="text-2xl sm:text-3xl font-semibold mb-8 text-green-800">Choose Your Role</h2>
+          <div className="space-y-4 sm:space-y-0 sm:space-x-8 flex flex-col sm:flex-row justify-center">
             <button
               type="button"
-              className="bg-green-600 text-white px-6 py-3 rounded-md text-base sm:text-lg font-medium transition duration-300 ease-in-out hover:bg-green-700 shadow-md hover:shadow-lg w-full sm:w-auto"
+              className="bg-green-500 text-white px-10 py-4 rounded-xl text-lg sm:text-xl font-medium transition duration-300 ease-in-out hover:bg-green-600 shadow-lg hover:shadow-xl w-full sm:w-auto"
               onClick={() => setUserType('donor')}
             >
               I'm a Donor
             </button>
             <button
               type="button"
-              className="bg-green-600 text-white px-6 py-3 rounded-md text-base sm:text-lg font-medium transition duration-300 ease-in-out hover:bg-green-700 shadow-md hover:shadow-lg w-full sm:w-auto"
+              className="bg-green-500 text-white px-10 py-4 rounded-xl text-lg sm:text-xl font-medium transition duration-300 ease-in-out hover:bg-green-600 shadow-lg hover:shadow-xl w-full sm:w-auto"
               onClick={() => setUserType('recipient')}
             >
-              I&apos;m a Recipient
+              I'm a Recipient
             </button>
           </div>
         </div>
@@ -95,30 +95,27 @@ export default function Signup() {
 
     return (
       <FormWrapper onSubmit={handleSubmit} schema={signupSchema}>
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-10">
+          <div className="relative">
             <FileInput
               name="avatarImage"
               label="Avatar Image"
-              multiple={false} // Single file for profile picture
-              previewStyle="profile" // Circular preview
+              multiple={false}
+              previewStyle="profile"
+              className="w-40 h-40 rounded-full border-4 border-green-300 shadow-lg object-cover"
             />
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-          {/* Username Field */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
           <Input name="username" label="Username" type="text" />
-          {/* Email Field */}
           <Input name="email" label="Email" type="email" />
-          {/* Phone Number Field */}
           <Input name="phoneNo" label="Phone Number" type="text" />
-          {/* Password Field */}
           <Input name="password" label="Password" type="password" />
-          {/* Location Fields */}
           <Input name="address" label="Address"/>
           <Input name="city" label="City"/>
           <Input name="state" label="State"/>
           <Input name="pincode" label="Pincode"/>
-          {/* donor specific fields */}
           {userType === 'donor' && (
             <Select
               name="donorType"
@@ -129,7 +126,6 @@ export default function Signup() {
               ]}
             />
           )}
-          {/* recipient specific fields */}
           {userType === 'recipient' && (
             <>
               <Select
@@ -149,7 +145,7 @@ export default function Signup() {
 
         <button
           type="submit"
-          className="w-full bg-green-600 text-white px-6 py-3 rounded-md text-base sm:text-lg font-medium transition duration-300 ease-in-out hover:bg-green-700 shadow-md hover:shadow-lg"
+          className="w-full bg-green-500 text-white px-8 py-4 rounded-xl text-lg sm:text-xl font-medium transition duration-300 ease-in-out hover:bg-green-600 shadow-lg hover:shadow-xl mt-10"
         >
           Register as {userType === 'donor' ? 'Donor' : 'Recipient'}
         </button>
@@ -158,11 +154,11 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-green-100 via-teal-100 to-blue-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl w-full space-y-8 bg-white p-6 sm:p-10 rounded-lg shadow-lg border border-green-100">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-200 via-teal-100 to-blue-200 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl w-full bg-white p-8 sm:p-12 rounded-3xl shadow-2xl max-h-screen">
         <div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-center text-green-800">Join FeedForward</h1>
-          <p className="mt-2 text-center text-base sm:text-lg text-gray-600">
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-center text-green-700 mb-4">Join FeedForward</h1>
+          <p className="text-center text-xl sm:text-2xl text-gray-600 max-w-2xl mx-auto mb-8">
             Sign up to start making a difference in reducing food waste
           </p>
         </div>
@@ -171,3 +167,4 @@ export default function Signup() {
     </div>
   );
 }
+
