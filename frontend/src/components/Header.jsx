@@ -36,7 +36,7 @@ function Header() {
           <div className="flex items-center">
             <button
               onClick={handleLogout}
-              className="bg-red-500 text-white px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base rounded-lg shadow-md hover:bg-green-600 transition-colors duration-300"
+              className="bg-red-500 text-white px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base rounded-lg shadow-md hover:bg-red-600 transition-colors duration-300"
             >
               Logout
             </button>
