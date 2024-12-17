@@ -1,9 +1,27 @@
 import React from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+
+import { submitLogout } from '../api/users';
 
 function Header() {
+
+  const navigate = useNavigate()
+
+  const submitLogoutMutation = useMutation({
+    mutationFn: submitLogout,
+    onSuccess: () => {
+      toast.success('Logout successful');
+      navigate('/login');
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  })
+
   const handleLogout = () => {
-    // Add logout functionality here
-    console.log('Logout clicked');
+    submitLogoutMutation.mutate();
   };
 
   return (
@@ -18,7 +36,7 @@ function Header() {
           <div className="flex items-center">
             <button
               onClick={handleLogout}
-              className="bg-green-500 text-white px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base rounded-lg shadow-md hover:bg-green-600 transition-colors duration-300"
+              className="bg-red-500 text-white px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base rounded-lg shadow-md hover:bg-green-600 transition-colors duration-300"
             >
               Logout
             </button>

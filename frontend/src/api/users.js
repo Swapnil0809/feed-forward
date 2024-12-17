@@ -11,6 +11,11 @@ export const submitLogin = async (formData) => {
   return response.data;
 };
 
+export const submitLogout = async () => {
+  const reponse = await axiosInstance.post("/users/logout");
+  return reponse.data;
+};
+
 export const fetchUserProfile = async () => {
   const response = await axiosInstance.get("/users/get-user-profile");
   return response.data.data;
