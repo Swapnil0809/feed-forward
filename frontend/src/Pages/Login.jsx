@@ -51,9 +51,6 @@ const Login = () => {
             Login
           </button>
         </FormWrapper>
-        <div className="mt-4 text-center">
-          <a href="#" className="text-sm text-green-600 hover:text-green-500">Forgot your password?</a>
-        </div>
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             Don&apos;t have an account?{' '}
