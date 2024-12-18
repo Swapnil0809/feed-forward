@@ -12,22 +12,20 @@ import { useFetchCoordinates } from '../hooks/useFetchCoordinates';
 import { createFormData } from '../utils/createFormData';
 import { submitSignup } from '../api/users';
 
-// Validation Schema with zod
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const signupSchema = z.object({
   username: z.string().nonempty("Username is required"),
   email: z.string().email("Invalid email address"),
   phoneNo: z.string().nonempty("Phone number is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  avatarImage:z.any().optional()
-  .refine(
-    (file) => {
-      console.log(file)
-      if (!file || file.length === 0) return true;
-      return ACCEPTED_IMAGE_TYPES.includes(file.type);
-    },
-    { message: "Invalid file. Please choose a JPEG, PNG, or WebP image." }
-  ),
+  avatarImage: z.any().optional()
+    .refine(
+      (file) => {
+        if (!file || file.length === 0) return true;
+        return ACCEPTED_IMAGE_TYPES.includes(file.type);
+      },
+      { message: "Invalid file. Please choose a JPEG, PNG, or WebP image." }
+    ),
   address: z.string().nonempty("Address is required"),
   city: z.string().nonempty("City is required"),
   state: z.string().nonempty("State is required"),
@@ -35,29 +33,28 @@ const signupSchema = z.object({
   donorType: z.string().optional(),
   organizationType: z.string().optional(),
   registrationNo: z.string().optional()
-})
+});
 
 export default function Signup() {
   const [userType, setUserType] = useState(null);
-
   const navigate = useNavigate();
 
-  const { mutateAsync:fetchCoordinates } = useFetchCoordinates();
+  const { mutateAsync: fetchCoordinates } = useFetchCoordinates();
   const submitSignupMutation = useMutation({
     mutationFn: submitSignup,
     onSuccess: (data) => {
-      toast.success("signup successful")
+      toast.success("Signup successful");
       console.log("Server response:", data);
       navigate('/login');
     },
     onError: (error) => {
-      console.log(error)
+      console.log(error);
+      toast.error("Signup failed. Please try again.");
     },
   });
 
   const handleSubmit = async (data) => {
     try {
-      console.log(data)
       const coordinates = await fetchCoordinates(data.pincode);
       data.coordinates = coordinates;
       const formData = createFormData(data);
@@ -65,6 +62,7 @@ export default function Signup() {
       submitSignupMutation.mutate({ url: apiUrl, formData });
     } catch (error) {
       console.error(error);
+      toast.error("An error occurred. Please try again.");
     }
   };
 
@@ -72,18 +70,18 @@ export default function Signup() {
     if (!userType) {
       return (
         <div className="text-center">
-          <h2 className="text-2xl sm:text-3xl font-semibold mb-8 text-green-800">Choose Your Role</h2>
-          <div className="space-y-4 sm:space-y-0 sm:space-x-8 flex flex-col sm:flex-row justify-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-8 text-green-800">Choose Your Role</h2>
+          <div className="space-y-4 md:space-y-0 md:space-x-8 flex flex-col md:flex-row justify-center">
             <button
               type="button"
-              className="bg-green-500 text-white px-10 py-4 rounded-xl text-lg sm:text-xl font-medium transition duration-300 ease-in-out hover:bg-green-600 shadow-lg hover:shadow-xl w-full sm:w-auto"
+              className="bg-green-500 text-white px-8 py-4 rounded-xl text-lg md:text-xl font-medium transition duration-300 ease-in-out hover:bg-green-600 shadow-lg hover:shadow-xl w-full md:w-auto"
               onClick={() => setUserType('donor')}
             >
               I'm a Donor
             </button>
             <button
               type="button"
-              className="bg-green-500 text-white px-10 py-4 rounded-xl text-lg sm:text-xl font-medium transition duration-300 ease-in-out hover:bg-green-600 shadow-lg hover:shadow-xl w-full sm:w-auto"
+              className="bg-green-500 text-white px-8 py-4 rounded-xl text-lg md:text-xl font-medium transition duration-300 ease-in-out hover:bg-green-600  shadow-lg hover:shadow-xl w-full md:w-auto"
               onClick={() => setUserType('recipient')}
             >
               I'm a Recipient
@@ -102,20 +100,20 @@ export default function Signup() {
               label="Avatar Image"
               multiple={false}
               previewStyle="profile"
-              className="w-40 h-40 rounded-full border-4 border-green-300 shadow-lg object-cover"
+              className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-green-300 shadow-lg object-cover"
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
           <Input name="username" label="Username" type="text" />
           <Input name="email" label="Email" type="email" />
-          <Input name="phoneNo" label="Phone Number" type="text" />
+          <Input name="phoneNo" label="Phone Number" type="tel" />
           <Input name="password" label="Password" type="password" />
-          <Input name="address" label="Address"/>
-          <Input name="city" label="City"/>
-          <Input name="state" label="State"/>
-          <Input name="pincode" label="Pincode"/>
+          <Input name="address" label="Address" />
+          <Input name="city" label="City" />
+          <Input name="state" label="State" />
+          <Input name="pincode" label="Pincode" />
           {userType === 'donor' && (
             <Select
               name="donorType"
@@ -138,14 +136,14 @@ export default function Signup() {
                   { value: "NGO", label: "NGO" },
                 ]}
               />
-              <Input name="registrationNo" label="Registration Number"/>
+              <Input name="registrationNo" label="Registration Number" />
             </>
           )}
         </div>
 
         <button
           type="submit"
-          className="w-full bg-green-500 text-white px-8 py-4 rounded-xl text-lg sm:text-xl font-medium transition duration-300 ease-in-out hover:bg-green-600 shadow-lg hover:shadow-xl mt-10"
+          className="w-full bg-green-500 text-white px-8 py-4 rounded-xl text-lg md:text-xl font-medium transition duration-300 ease-in-out hover:bg-green-600 hover:scale-105 transform shadow-lg hover:shadow-xl mt-10"
         >
           Register as {userType === 'donor' ? 'Donor' : 'Recipient'}
         </button>
@@ -155,10 +153,10 @@ export default function Signup() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-200 via-teal-100 to-blue-200 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl w-full bg-white p-8 sm:p-12 rounded-3xl shadow-2xl max-h-screen">
-        <div>
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-center text-green-700 mb-4">Join FeedForward</h1>
-          <p className="text-center text-xl sm:text-2xl text-gray-600 max-w-2xl mx-auto mb-8">
+      <div className="max-w-4xl w-full bg-white p-8 md:p-12 rounded-3xl shadow-2xl overflow-y-auto md:overflow-visible max-h-[90vh] md:max-h-none">
+        <div className="mb-12">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-center text-green-700 mb-4">Join FeedForward</h1>
+          <p className="text-center text-xl md:text-2xl text-gray-600 max-w-2xl mx-auto">
             Sign up to start making a difference in reducing food waste
           </p>
         </div>
@@ -167,4 +165,3 @@ export default function Signup() {
     </div>
   );
 }
-

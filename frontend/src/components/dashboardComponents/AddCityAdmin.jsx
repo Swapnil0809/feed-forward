@@ -45,48 +45,50 @@ function AddCityAdmin({ setAddCityAdmin }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-800 bg-opacity-70 overflow-y-auto h-full w-full flex justify-center items-center border border-gray-900">
-      <div className="relative bg-white w-full max-w-4xl mx-auto p-8 rounded-xl shadow-lg">
-        <button
-          className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 transition-colors duration-200"
-          onClick={() => setAddCityAdmin(false)}
-        >
-          <IoClose className="text-2xl" />
-        </button>
-        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center ">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-green-500">
+    <div className="fixed inset-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center p-4 z-50 overflow-y-auto">
+      <div className="w-full max-w-4xl bg-white rounded-xl shadow-2xl overflow-hidden transform transition-all duration-300 ease-in-out my-8">
+        <div className="bg-gradient-to-r from-green-500 to-blue-500 p-4 sm:p-6 flex justify-between items-center">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white">
             Add City Admin
-          </span>
-        </h2>
-        <FormWrapper onSubmit={handleSubmit} schema={cityAdminSchema}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[
-              { name: "username", label: "Username", type: "text" },
-              { name: "email", label: "Email", type: "email" },
-              { name: "phoneNo", label: "Phone Number", type: "text" },
-              { name: "password", label: "Password", type: "password" },
-              { name: "address", label: "Address", type: "text" },
-              { name: "city", label: "City", type: "text" },
-              { name: "state", label: "State", type: "text" },
-              { name: "pincode", label: "Pincode", type: "text" },
-            ].map((field) => (
-              <div key={field.name} className="relative">
-                <Input
-                  name={field.name}
-                  label={field.label}
-                  type={field.type}
-                  className="w-full px-4 py-3 text-gray-700 "
-                />
-              </div>
-            ))}
-          </div>
+          </h2>
           <button
-            type="submit"
-            className="mt-8 w-full py-3 px-6 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600"
+            className="text-white hover:text-gray-200 transition duration-150 ease-in-out"
+            onClick={() => setAddCityAdmin(false)}
           >
-            Add City Admin
+            <IoClose className="text-2xl sm:text-3xl" />
           </button>
-        </FormWrapper>
+        </div>
+        <div className="p-4 sm:p-6 md:p-8 max-h-[calc(100vh-200px)] overflow-y-auto">
+          <FormWrapper onSubmit={handleSubmit} schema={cityAdminSchema}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+              {[
+                { name: "username", label: "Username", type: "text" },
+                { name: "email", label: "Email", type: "email" },
+                { name: "phoneNo", label: "Phone Number", type: "tel" },
+                { name: "password", label: "Password", type: "password" },
+                { name: "address", label: "Address", type: "text" },
+                { name: "city", label: "City", type: "text" },
+                { name: "state", label: "State", type: "text" },
+                { name: "pincode", label: "Pincode", type: "text" },
+              ].map((field) => (
+                <div key={field.name} className="relative">
+                  <Input
+                    name={field.name}
+                    label={field.label}
+                    type={field.type}
+                    // className=" px-4 py-2 text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white border border-gray-300 "
+                  />
+                </div>
+              ))}
+            </div>
+            <button
+              type="submit"
+              className=" w-full bg-green-500 text-white px-6 py-3 rounded-xl text-base sm:text-lg font-medium transition duration-300 ease-in-out hover:bg-green-600"
+            >
+              Add City Admin
+            </button>
+          </FormWrapper>
+        </div>
       </div>
     </div>
   );

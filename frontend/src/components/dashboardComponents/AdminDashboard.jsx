@@ -38,7 +38,7 @@ const AdminDashboard = () => {
               </h1>
               <div className="flex justify-center mb-10">
                 <button 
-                  className="px-8 py-3 bg-green-500 text-white font-bold rounded-full hover:bg-green-600 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 shadow-lg"
+                  className="px-8 py-3 bg-green-500 text-white font-bold rounded-xl hover:bg-green-600  shadow-lg"
                   onClick={() => setAddCityAdmin(true)}
                 >
                   Add New Admin
@@ -46,7 +46,7 @@ const AdminDashboard = () => {
               </div>
               <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {cityAdmins && cityAdmins.map((cityAdmin) => (
-                  <div key={cityAdmin._id} className="bg-white rounded-2xl shadow-lg overflow-hidden transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl border border-gray-200">
+                  <div key={cityAdmin._id} className="bg-white rounded-2xl shadow-lg overflow-hidden  border border-gray-200">
                     <div className="p-6">
                       <div className="flex items-center mb-4">
                         <div 
@@ -77,7 +77,7 @@ const AdminDashboard = () => {
                         </p>
                       </div>
                       <button 
-                        className="w-full py-3 bg-red-500 text-white font-bold rounded-lg hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 shadow-lg"
+                        className="w-full py-3 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 shadow-lg"
                         onClick={() => removeCityAdminMutation.mutate(cityAdmin._id)}
                       >
                         Remove Admin

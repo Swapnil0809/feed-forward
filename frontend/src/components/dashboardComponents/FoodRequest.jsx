@@ -85,7 +85,7 @@ const FoodRequest = ({ foodRequests, userRole }) => {
                 {userRole === "Recipient" && (
                   <div className="flex space-x-2">
                     <button
-                      className="flex-1 py-2 px-4 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:-translate-y-1"
+                      className="flex-1 py-2 px-4 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 "
                       onClick={() => {
                         setEditingRequest(request);
                         setIsOpen(true);
@@ -94,7 +94,7 @@ const FoodRequest = ({ foodRequests, userRole }) => {
                       Edit
                     </button>
                     <button
-                      className="flex-1 py-2 px-4 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:-translate-y-1"
+                      className="flex-1 py-2 px-4 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600"
                       onClick={() => {
                         deleteRequestMutation.mutate(request._id);
                       }}
@@ -105,7 +105,7 @@ const FoodRequest = ({ foodRequests, userRole }) => {
                 )}
                 {userRole === "Donor" && (
                   <button 
-                    className="w-full mt-4 py-2 px-4 bg-green-500 text-white font-medium rounded-lg hover:from-blue-600 hover:to-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:-translate-y-1"
+                    className="w-full mt-4 py-2 px-4 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600"
                     onClick={() => fulfillRequestMutation.mutate(request._id)}
                   >
                     Donate
