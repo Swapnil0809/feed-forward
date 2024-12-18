@@ -17,7 +17,7 @@ function DonationComplete() {
     if (isError) return <p>Error: {error.message}</p>;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center px-4">
+        <div className="min-h-screen bg-gradient-to-r from-green-100 via-teal-100 to-blue-100 flex items-center justify-center px-4">
             <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
                 <div className="p-8 bg-gradient-to-b from-white to-green-50">
                     <div className="text-center">
