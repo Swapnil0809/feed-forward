@@ -31,10 +31,10 @@ const Home = () => {
       </header>
 
       {/* Hero Section */}
-      <main className="flex-grow flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-24 relative z-10">
-        <div className="max-w-7xl w-full flex flex-col lg:flex-row items-center justify-between space-y-8 lg:space-y-0 lg:space-x-8">
+      <main className=" flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-24 relative z-10 pt-5">
+        <div className="max-w-7xl w-full flex lg:flex-row items-center justify-between space-y-8 lg:space-y-0 lg:space-x-8 flex-col-reverse pb-8">
           {/* Left Content */}
-          <div className="lg:w-1/2 space-y-4 sm:space-y-6 text-center lg:text-left">
+          <div className="lg:w-1/2 space-y-4 sm:space-y-6 text-center lg:text-left ">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-tight">
               <span className="text-gray-800">Save Food,</span><br />
               <span className="text-green-600 animate-pulse">Save Life</span>
@@ -56,7 +56,7 @@ const Home = () => {
             <img
               src={HeroImg}
               alt="Food Delivery"
-              className="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl h-auto transform transition-transform duration-500 hover:scale-105"
+              className="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl h-auto transform transition-transform duration-500 hover:scale-105 ml-12 "
             />
           </div>
         </div>
