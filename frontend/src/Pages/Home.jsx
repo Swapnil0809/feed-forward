@@ -8,7 +8,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gradient-to-r from-green-100 via-teal-100 to-blue-100 text-gray-900 flex flex-col">
       {/* Header Section */}
-      <header className="py-4 px-4 sm:px-6 lg:px-8 bg-white/80 shadow-md rounded-b-2xl z-10 relative">
+      <header className="py-4 px-4 sm:px-6 lg:px-8 bg-white/80 shadow-md z-10 relative">
         <nav className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center">
             <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-green-600 tracking-wide">FeedForward</span>

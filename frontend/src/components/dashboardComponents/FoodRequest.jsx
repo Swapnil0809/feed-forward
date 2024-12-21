@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { GiFoodTruck } from "react-icons/gi";
+import { GiFoodTruck} from "react-icons/gi";
+import { FiEdit2, FiTrash2 } from "react-icons/fi";
+
+
 import BeatLoader from "react-spinners/BeatLoader";
 
 import { deleteFoodRequest, fulfillFoodRequest } from "../../api/foodRequest";
@@ -62,7 +65,7 @@ const FoodRequest = ({ foodRequests, userRole }) => {
             foodRequests.map((request) => (
               <div
                 key={request._id}
-                className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300 "
+                className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl  "
               >
                 <h3 className="text-2xl font-semibold text-gray-800 mb-2">
                   {request.title}
@@ -103,20 +106,22 @@ const FoodRequest = ({ foodRequests, userRole }) => {
                 {userRole === "Recipient" && (
                   <div className="flex space-x-2">
                     <button
-                      className="flex-1 py-2 px-4 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 "
+                      className="flex-1 py-2 px-4 bg-blue-500 text-white font-medium rounded-xl hover:bg-blue-600 flex items-center justify-center "
                       onClick={() => {
                         setEditingRequest(request);
                         setIsOpen(true);
                       }}
                     >
+                      <FiEdit2 className="mr-2" />                    
                       Edit
                     </button>
                     <button
-                      className="flex-1 py-2 px-4 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600"
+                      className="flex-1 py-2 px-4 bg-red-500 text-white font-medium rounded-xl hover:bg-red-600 flex items-center justify-center"
                       onClick={() => {
                         deleteRequestMutation.mutate(request._id);
                       }}
                     >
+                      <FiTrash2 className="mr-2" />
                       {deleteRequestMutation.isPending ? (
                         <BeatLoader size={8} color="#fff" />
                       ) : (
