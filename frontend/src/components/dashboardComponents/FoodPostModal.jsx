@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import toast from "react-hot-toast";
 import { IoClose } from "react-icons/io5";
@@ -20,6 +20,7 @@ import { set } from "react-hook-form";
 function FoodPostModal({ setIsOpen, post }) {
   const isEditMode = !!post;
   const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   const { mutateAsync: fetchCoordinates } = useFetchCoordinates();
 
@@ -27,6 +28,7 @@ function FoodPostModal({ setIsOpen, post }) {
     mutationFn: addPost,
     onSuccess: () => {
       setIsLoading(false);
+      queryClient.invalidateQueries(["donorFoodPosts"]);
       toast.success("Post added successfully");
       setIsOpen(false);
     },
@@ -41,6 +43,7 @@ function FoodPostModal({ setIsOpen, post }) {
     mutationFn: updatePost,
     onSuccess: () => {
       setIsLoading(false);
+      queryClient.invalidateQueries(["donorFoodPosts"]);
       toast.success("Post updated successfully");
       setIsOpen(false);
     },

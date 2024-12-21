@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { z } from "zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { IoClose } from "react-icons/io5";
 import BeatLoader from "react-spinners/BeatLoader";
@@ -16,11 +15,13 @@ import { addFoodRequest, updateFoodRequest } from "../../api/foodRequest";
 function FoodRequestModal({ setIsOpen, request }) {
   const isEditMode = !!request;
   const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   const addRequestMutation = useMutation({
     mutationFn: addFoodRequest,
     onSuccess: () => {
       setIsLoading(false);
+      queryClient.invalidateQueries(["recipientFoodRequests"]);
       toast.success("Request added successfully");
       setIsOpen(false);
     },
@@ -35,6 +36,7 @@ function FoodRequestModal({ setIsOpen, request }) {
     mutationFn: updateFoodRequest,
     onSuccess: () => {
       setIsLoading(false);
+      queryClient.invalidateQueries(["recipientFoodRequests"]);
       toast.success("Request updated successfully");
       setIsOpen(false);
     },
