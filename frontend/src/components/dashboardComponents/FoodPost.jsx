@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { FiEdit2, FiTrash2, FiPlusCircle } from "react-icons/fi";
 import { MdFastfood } from "react-icons/md";
+import BeatLoader from "react-spinners/BeatLoader";
 
 import { deletePost, requestFood } from "../../api/foodPosts";
 import { parseErrorMessage } from "../../utils/parseErrorMessage";

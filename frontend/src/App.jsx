@@ -1,10 +1,11 @@
 import { Route, Routes } from "react-router-dom";
+import {Toaster} from "react-hot-toast"
+
 import Home from "./Pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/SignUp"
 import Dashboard from "./pages/Dashboard";
 import DonationComplete from "./pages/DonationComplete";
-import {Toaster} from "react-hot-toast"
 
 
 function App() {

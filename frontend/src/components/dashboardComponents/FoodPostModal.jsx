@@ -1,90 +1,73 @@
-import React from 'react'
+import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import toast from "react-hot-toast";
 import { IoClose } from "react-icons/io5";
+import BeatLoader from "react-spinners/BeatLoader";
 
-import FormWrapper from '../formComponents/FormWrapper'
-import FileInput from '../formComponents/FileInput'
-import Input from '../formComponents/Input'
-import Select from '../formComponents/Select'
-import Checkbox from '../formComponents/CheckBox';
-import { useFetchCoordinates } from '../../hooks/useFetchCoordinates';
-import { createFormData } from '../../utils/createFormData';
-import { parseErrorMessage } from '../../utils/parseErrorMessage';
-import { addPost, updatePost } from '../../api/foodPosts';
+import FormWrapper from "../formComponents/FormWrapper";
+import FileInput from "../formComponents/FileInput";
+import Input from "../formComponents/Input";
+import Select from "../formComponents/Select";
+import Checkbox from "../formComponents/CheckBox";
+import { postSchema } from "../../utils/validations";
+import { useFetchCoordinates } from "../../hooks/useFetchCoordinates";
+import { createFormData } from "../../utils/createFormData";
+import { parseErrorMessage } from "../../utils/parseErrorMessage";
+import { addPost, updatePost } from "../../api/foodPosts";
+import { set } from "react-hook-form";
 
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const postSchema = z.object({
-  images:z.any().optional()
-    .refine(
-      (files) => {
-        if (!files || files.length === 0) return true;
-        return files.every((file) => ACCEPTED_IMAGE_TYPES.includes(file.type));
-      },
-      { message: "Invalid file(s). Please choose JPEG, PNG, or WebP images only." }
-    ),
-  title: z.string().nonempty("Title is required"),
-  description: z.string().nonempty("Description is required"),
-  quantity: z.preprocess(
-    (val) => (typeof val === "string" ? parseFloat(val) : val),
-    z.number().min(1, "Quantity must be at least 1")
-  ),
-  quantityUnit: z.string().nonempty("Quantity unit is required"),
-  foodType: z.string().nonempty("Food Type is required"),
-  bestBefore:z.preprocess((arg) => {
-    return typeof arg === "string" ? new Date(arg) : arg;
-  }, z.date().min(new Date(), "Best Before must be in the future")),
-  useUserLocation: z.boolean().default(false),
-  address: z.string().optional(),
-  pincode: z.string().optional(),
-});
-
-function FoodPostModal({setIsOpen,post}) {
+function FoodPostModal({ setIsOpen, post }) {
   const isEditMode = !!post;
+  const [isLoading, setIsLoading] = useState(false);
 
-  const {mutateAsync:fetchCoordinates} = useFetchCoordinates();
+  const { mutateAsync: fetchCoordinates } = useFetchCoordinates();
 
   const addPostMutation = useMutation({
-    mutationFn:addPost,
-    onSuccess:() => {
-      toast.success("Post added successfully")
-      setIsOpen(false)
+    mutationFn: addPost,
+    onSuccess: () => {
+      setIsLoading(false);
+      toast.success("Post added successfully");
+      setIsOpen(false);
     },
-    onError:(error) => {
-      console.log(error)
+    onError: (error) => {
+      setIsLoading(false);
+      console.log(error);
       toast.error(parseErrorMessage(error?.response));
-    }
-  })
+    },
+  });
 
   const editPostMutation = useMutation({
-    mutationFn:updatePost,
-    onSuccess:() => {
-      toast.success("Post updated successfully")
-      setIsOpen(false)
+    mutationFn: updatePost,
+    onSuccess: () => {
+      setIsLoading(false);
+      toast.success("Post updated successfully");
+      setIsOpen(false);
     },
-    onError:(error) => {
-      console.log(error)
+    onError: (error) => {
+      setIsLoading(false);
+      console.log(error);
       toast.error(parseErrorMessage(error?.response));
-    }
-  })
+    },
+  });
 
-  const handleSubmit =async (data) => {
-    console.log(data)
-    if(!data.useUserLocation){
+  const handleSubmit = async (data) => {
+    console.log(data);
+    setIsLoading(true);
+    if (!data.useUserLocation) {
       const coordinates = await fetchCoordinates(data.pincode);
       data.coordinates = coordinates;
     }
     const formData = createFormData(data);
     for (const [key, value] of formData.entries()) {
       console.log(`${key}:`, value);
-  }
-    if(isEditMode){
+    }
+    if (isEditMode) {
       editPostMutation.mutate({ id: post._id, formData });
     } else {
       addPostMutation.mutate(formData);
     }
-  }
+  };
 
   return (
     <div className="fixed inset-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center py-4 z-50 overflow-y-auto">
@@ -155,13 +138,19 @@ function FoodPostModal({setIsOpen,post}) {
               type="submit"
               className="mt-8 w-full bg-green-500 text-white px-6 py-3 rounded-md text-base sm:text-lg font-medium transition duration-300 ease-in-out hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
             >
-              {isEditMode ? "Update Post" : "Add Post"}
+              {isLoading ? (
+                <BeatLoader color="#fff" size={8} />
+              ) : isEditMode ? (
+                "Update Post"
+              ) : (
+                "Add Post"
+              )}
             </button>
           </FormWrapper>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default FoodPostModal
+export default FoodPostModal;

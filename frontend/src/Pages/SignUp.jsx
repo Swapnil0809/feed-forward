@@ -1,53 +1,34 @@
-import React, { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
-import { z } from "zod";
-import toast from 'react-hot-toast';
+import React, { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import BeatLoader from "react-spinners/BeatLoader";
+import toast from "react-hot-toast";
 
-import FormWrapper from '../components/formComponents/FormWrapper';
-import FileInput from '../components/formComponents/FileInput';
-import Input from '../components/formComponents/Input';
-import Select from '../components/formComponents/Select';
-import { useFetchCoordinates } from '../hooks/useFetchCoordinates';
-import { createFormData } from '../utils/createFormData';
-import { submitSignup } from '../api/users';
-
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const signupSchema = z.object({
-  username: z.string().nonempty("Username is required"),
-  email: z.string().email("Invalid email address"),
-  phoneNo: z.string().nonempty("Phone number is required"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  avatarImage: z.any().optional()
-    .refine(
-      (file) => {
-        if (!file || file.length === 0) return true;
-        return ACCEPTED_IMAGE_TYPES.includes(file.type);
-      },
-      { message: "Invalid file. Please choose a JPEG, PNG, or WebP image." }
-    ),
-  address: z.string().nonempty("Address is required"),
-  city: z.string().nonempty("City is required"),
-  state: z.string().nonempty("State is required"),
-  pincode: z.string().nonempty("Pincode is required"),
-  donorType: z.string().optional(),
-  organizationType: z.string().optional(),
-  registrationNo: z.string().optional()
-});
+import FormWrapper from "../components/formComponents/FormWrapper";
+import FileInput from "../components/formComponents/FileInput";
+import Input from "../components/formComponents/Input";
+import Select from "../components/formComponents/Select";
+import { useFetchCoordinates } from "../hooks/useFetchCoordinates";
+import { createFormData } from "../utils/createFormData";
+import { signupSchema } from "../utils/validations";
+import { registerUser } from "../api/users";
 
 export default function Signup() {
   const [userType, setUserType] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const { mutateAsync: fetchCoordinates } = useFetchCoordinates();
-  const submitSignupMutation = useMutation({
-    mutationFn: submitSignup,
+  const { mutate: signup } = useMutation({
+    mutationFn: registerUser,
     onSuccess: (data) => {
+      setIsLoading(false);
       toast.success("Signup successful");
       console.log("Server response:", data);
-      navigate('/login');
+      navigate("/login");
     },
     onError: (error) => {
+      setIsLoading(false);
       console.log(error);
       toast.error("Signup failed. Please try again.");
     },
@@ -55,11 +36,12 @@ export default function Signup() {
 
   const handleSubmit = async (data) => {
     try {
+      setIsLoading(true);
       const coordinates = await fetchCoordinates(data.pincode);
       data.coordinates = coordinates;
       const formData = createFormData(data);
       const apiUrl = `/users/${userType}-signup`;
-      submitSignupMutation.mutate({ url: apiUrl, formData });
+      signup({ url: apiUrl, formData });
     } catch (error) {
       console.error(error);
       toast.error("An error occurred. Please try again.");
@@ -70,19 +52,22 @@ export default function Signup() {
     if (!userType) {
       return (
         <div className="text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-8 text-green-800">Choose Your Role</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-8 text-green-800">
+            Choose Your Role
+          </h2>
           <div className="space-y-4 md:space-y-0 md:space-x-8 flex flex-col md:flex-row justify-center">
             <button
               type="button"
               className="bg-green-500 text-white px-8 py-4 rounded-xl text-lg md:text-xl font-medium transition duration-300 ease-in-out hover:bg-green-600 shadow-lg hover:shadow-xl w-full md:w-auto"
-              onClick={() => setUserType('donor')}
+              onClick={() => setUserType("donor")}
             >
               I'm a Donor
             </button>
             <button
               type="button"
+              disabled={isLoading}
               className="bg-green-500 text-white px-8 py-4 rounded-xl text-lg md:text-xl font-medium transition duration-300 ease-in-out hover:bg-green-600  shadow-lg hover:shadow-xl w-full md:w-auto"
-              onClick={() => setUserType('recipient')}
+              onClick={() => setUserType("recipient")}
             >
               I'm a Recipient
             </button>
@@ -114,7 +99,7 @@ export default function Signup() {
           <Input name="city" label="City" />
           <Input name="state" label="State" />
           <Input name="pincode" label="Pincode" />
-          {userType === 'donor' && (
+          {userType === "donor" && (
             <Select
               name="donorType"
               label="Donor Type"
@@ -124,7 +109,7 @@ export default function Signup() {
               ]}
             />
           )}
-          {userType === 'recipient' && (
+          {userType === "recipient" && (
             <>
               <Select
                 name="organizationType"
@@ -143,9 +128,14 @@ export default function Signup() {
 
         <button
           type="submit"
+          disabled={isLoading}
           className="w-full bg-green-500 text-white px-8 py-4 rounded-xl text-lg md:text-xl font-medium transition duration-300 ease-in-out hover:bg-green-600 hover:scale-105 transform shadow-lg hover:shadow-xl mt-10"
         >
-          Register as {userType === 'donor' ? 'Donor' : 'Recipient'}
+          {isLoading ? (
+            <BeatLoader size={8} color="#fff" />
+          ) : (
+            `Register as ${userType === "donor" ? "Donor" : "Recipient"}`
+          )}
         </button>
       </FormWrapper>
     );
@@ -155,7 +145,9 @@ export default function Signup() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-200 via-teal-100 to-blue-200 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl w-full bg-white p-8 md:p-12 rounded-3xl shadow-2xl overflow-y-auto md:overflow-visible max-h-[90vh] md:max-h-none">
         <div className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-center text-green-700 mb-4">Join FeedForward</h1>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-center text-green-700 mb-4">
+            Join FeedForward
+          </h1>
           <p className="text-center text-xl md:text-2xl text-gray-600 max-w-2xl mx-auto">
             Sign up to start making a difference in reducing food waste
           </p>

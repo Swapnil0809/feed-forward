@@ -3,14 +3,14 @@ import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
-import { submitLogout } from '../api/users';
+import { logoutUser } from '../api/users';
 
 function Header() {
 
   const navigate = useNavigate()
 
-  const submitLogoutMutation = useMutation({
-    mutationFn: submitLogout,
+  const {mutate:logout} = useMutation({
+    mutationFn: logoutUser,
     onSuccess: () => {
       toast.success('Logout successful');
       navigate('/login');
@@ -21,7 +21,7 @@ function Header() {
   })
 
   const handleLogout = () => {
-    submitLogoutMutation.mutate();
+    logout();
   };
 
   return (
