@@ -439,6 +439,7 @@ const getRecipientDashboardStats = asyncHandler(async (user) => {
   });
   const totalDonations = await Donation.countDocuments({
     recipientId: user._id,
+    status: "completed",
   });
 
   return {
